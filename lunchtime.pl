@@ -24,8 +24,6 @@ use POSIX;
 $ntime = time;
 $weeknum = POSIX::strftime("%V", localtime($ntime));
 $yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
-$weeknum = '25';
-$yearweek = '2009-25';
 
 foreach $url (keys %urls)
 {
@@ -35,7 +33,6 @@ foreach $url (keys %urls)
   {
     # url for sarimner has week info in url which needs to be modified
     $url_req =~ s/YYYY-WW/$yearweek/;
-    print "mod url: $url_req\n";
   }
   if ($req = $http->request($url_req))
   {
@@ -104,7 +101,8 @@ sub sarimner_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<br>.*?$day(.*?)(<b>\d|<nl>Chefs)/s)
+  #print "BODY\n$htmlbody\n";
+  if ($htmlbody =~ /<br>.*?$day(.*?)(<br*>\d|<nl>Chefs)/s)
   {
     $lunch = $1;
     $lunch =~ s/\n//g;
@@ -113,7 +111,7 @@ sub sarimner_day
 
     $lunch =~ s/Cross:\s*//; # choice separator
     $lunch =~ s/Husman:\s*/ :: /; # choice separator
-    $lunch =~ s/Vegetariska:\s*/ :: /; # choice separator
+    $lunch =~ s/Vegetariska.*?:\s*/ :: /; # choice separator
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/&amp;/o/g;
 
@@ -175,8 +173,8 @@ sub gladimat_day
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
     #replace  - as separator between lunch choices, but first remove the first sep
-    $lunch =~ s/^-\s+//;
-    $lunch =~ s/ - / :: /g;
+    $lunch =~ s/^-\s*//;
+    $lunch =~ s/\s+-\s*/ :: /g;
   }
   else
   {
