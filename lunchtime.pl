@@ -75,7 +75,7 @@ print "<html>\n";
 print "<head>\n";
 print "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n";
 print "</head>\n";
-print "<body>\n";
+print "<body style=\"font-family:verdana\">\n";
 $timestamp = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($ntime));
 
 $dayofweek = (localtime($ntime))[6];
