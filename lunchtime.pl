@@ -87,7 +87,9 @@ foreach $day (@days_match)
 {
   print "<h2>$days_print{$day}</h2>\n";
   print "<table>\n";
+  print "<tbody style=\"font-size:small\">\n";
   print $menu{$day};
+  print "</tbody>\n";
   print "</table>\n";
 }
 
@@ -122,7 +124,7 @@ sub sarimner_day
   }
   else
   {
-    $lunch = "No $day found";
+    $lunch = "---";
   }
   return "<tr><td>Särimner&nbsp;Hilda</td><td>".$lunch."</td></tr>";
 }
@@ -149,7 +151,7 @@ sub finninn_day
   }
   else
   {
-    $lunch = "No $day found";
+    $lunch = "---";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<tr><td>Finn Inn</td><td>".$lunch."</td></tr>";
@@ -178,7 +180,7 @@ sub gladimat_day
   }
   else
   {
-    $lunch = "No $day found";
+    $lunch = "---";
   }
   return "<tr><td>Glad i mat</td><td>".$lunch."</td></tr>";
 }
@@ -205,7 +207,7 @@ sub bryggan_day
   }
   else
   {
-    $lunch = "No $day found";
+    $lunch = "---";
   }
   return "<tr><td>Bryggan</td><td>".$lunch."</td></tr>";
 }
@@ -233,7 +235,7 @@ sub ideonalfa_day
   }
   else
   {
-    $lunch = "No $day found";
+    $lunch = "---";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<tr><td>Ideon Alfa</td><td>".$lunch."</td></tr>";
