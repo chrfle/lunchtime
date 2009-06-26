@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 
 %urls = (
-  'http://www.finninn.com/finninn/dagens.html', \&finninn_day
+   'http://www.finninn.com/finninn/dagens.html', \&finninn_day
   ,'http://www.gladimat.ideon.se/index.html', \&gladimat_day
   ,'http://www.cafebryggan.com/', \&bryggan_day
   ,'http://www.restaurant.ideon.se/', \&ideonalfa_day
@@ -124,7 +124,7 @@ sub sarimner_day
   }
   else
   {
-    $lunch = "---";
+    $lunch = "&mdash;";
   }
   return "<tr><td>Särimner&nbsp;Hilda</td><td>".$lunch."</td></tr>";
 }
@@ -137,11 +137,11 @@ sub finninn_day
   {
     $lunch = $1;
     $lunch =~ s/\n//g;
+    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<\/p>/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&nbsp;//g;
     $lunch =~ s/&amp;/o/g;
 
     $lunch =~ s/^\s+//;
@@ -151,7 +151,7 @@ sub finninn_day
   }
   else
   {
-    $lunch = "---";
+    $lunch = "&mdash;";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<tr><td>Finn Inn</td><td>".$lunch."</td></tr>";
@@ -165,11 +165,10 @@ sub gladimat_day
   {
     $lunch = $1;
     $lunch =~ s/\n//g;
+    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    #print "  LUNCH: $lunch\n";
-    $lunch =~ s/&nbsp;//g;
     $lunch =~ s/&amp;/o/g;
 
     $lunch =~ s/^\s+//;
@@ -180,7 +179,7 @@ sub gladimat_day
   }
   else
   {
-    $lunch = "---";
+    $lunch = "&mdash;";
   }
   return "<tr><td>Glad i mat</td><td>".$lunch."</td></tr>";
 }
@@ -193,12 +192,11 @@ sub bryggan_day
   {
     $lunch = $1;
     $lunch =~ s/\n//g;
+    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
-    #print "  LUNCH: $lunch\n";
     $lunch =~ s/<br \/>/ :: /g; # choice separator
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&nbsp;//g;
 
     $lunch =~ s/&amp;/o/g;
 
@@ -207,7 +205,7 @@ sub bryggan_day
   }
   else
   {
-    $lunch = "---";
+    $lunch = "&mdash;";
   }
   return "<tr><td>Bryggan</td><td>".$lunch."</td></tr>";
 }
@@ -219,11 +217,10 @@ sub ideonalfa_day
   {
     $lunch = $1;
     $lunch =~ s/\n//g;
+    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
-    #print "  LUNCH: $lunch\n";
     $lunch =~ s/<br>/ - /g;
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&nbsp;//g;
 
     $lunch =~ s/&amp;/o/g;
 
@@ -235,7 +232,7 @@ sub ideonalfa_day
   }
   else
   {
-    $lunch = "---";
+    $lunch = "&mdash;";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<tr><td>Ideon Alfa</td><td>".$lunch."</td></tr>";
