@@ -12,6 +12,7 @@ use POSIX;
   ,'http://www.cafebryggan.com/', \&bryggan_day
   ,'http://www.restaurant.ideon.se/', \&ideonalfa_day
   ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
+  ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -209,6 +210,7 @@ sub bryggan_day
   }
   return "<tr><td>Bryggan</td><td>".$lunch."</td></tr>";
 }
+
 sub ideonalfa_day
 {
   my ($htmlbody, $day) = @_;
@@ -236,4 +238,30 @@ sub ideonalfa_day
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<tr><td>Ideon Alfa</td><td>".$lunch."</td></tr>";
+}
+
+sub annaskok_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:* (.*?)<\/font>/is)
+  {
+    $lunch = $1;
+    $lunch =~ s/\n//g;
+    $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/\s+/ /g;
+    $lunch =~ s/<br \/>/ :: /g; # choice separator
+    $lunch =~ s/Vegetariskt:\s*//;
+    $lunch =~ s/<.*?>//g;
+
+    $lunch =~ s/&amp;/o/g;
+
+    $lunch =~ s/^\s+//;
+    $lunch =~ s/\s+$//;
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  return "<tr><td>Annas Kök</td><td>".$lunch."</td></tr>";
 }
