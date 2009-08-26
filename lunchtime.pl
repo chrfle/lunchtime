@@ -26,8 +26,17 @@ $ntime = time;
 $weeknum = POSIX::strftime("%V", localtime($ntime));
 $yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
 
+$lb = "dark";
 foreach $url (keys %urls)
 {
+  if ($lb eq "lght")
+  {
+    $lb = "dark";
+  }
+  else
+  {
+    $lb= "lght";
+  }
   $http = new HTTP::Lite;
   $url_req = $url;
   if ($url_req =~ /sarimner/)
@@ -56,7 +65,8 @@ foreach $url (keys %urls)
       {
         $lunch = $urls{$url}($body, $day);
         #print "$lunch\n";
-        $menu{$day} .= "$lunch\n";
+  
+        $menu{$day} .= "<tr class=\"$lb\">$lunch</tr>\n";
       }
     }
     else
@@ -74,6 +84,7 @@ foreach $url (keys %urls)
 
 print "<html>\n";
 print "<head>\n";
+print "<link rel=\"stylesheet\" href=\"static/lunchtime.css\" type=\"text/css\" />\n";
 print "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n";
 print "</head>\n";
 print "<body style=\"font-family:verdana\">\n";
@@ -84,15 +95,15 @@ $date_monday = POSIX::strftime("%Y-%m-%d", localtime($ntime - (($dayofweek - 1) 
 $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 24 * 60 * 60)));
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
+print "<table class=\"lm\">\n";
+print "<tbody>\n";
 foreach $day (@days_match)
 {
-  print "<h2>$days_print{$day}</h2>\n";
-  print "<table>\n";
-  print "<tbody style=\"font-size:small\">\n";
+  print "<tr class=\"dayhead\"><td>$days_print{$day}</td></tr>\n";
   print $menu{$day};
-  print "</tbody>\n";
-  print "</table>\n";
 }
+print "</tbody>\n";
+print "</table>\n";
 
 print "<br><br>\n";
 print "<hr size=\"0\">\n";
@@ -127,7 +138,7 @@ sub sarimner_day
   {
     $lunch = "&mdash;";
   }
-  return "<tr><td>Särimner&nbsp;Hilda</td><td>".$lunch."</td></tr>";
+  return "<td>Särimner&nbsp;Hilda</td><td>".$lunch."</td>";
 }
 
 sub finninn_day
@@ -155,7 +166,7 @@ sub finninn_day
     $lunch = "&mdash;";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<tr><td>Finn Inn</td><td>".$lunch."</td></tr>";
+  return "<td>Finn Inn</td><td>".$lunch."</td>";
 }
 
 sub gladimat_day
@@ -182,7 +193,7 @@ sub gladimat_day
   {
     $lunch = "&mdash;";
   }
-  return "<tr><td>Glad i mat</td><td>".$lunch."</td></tr>";
+  return "<td>Glad i mat</td><td>".$lunch."</td>";
 }
 
 sub bryggan_day
@@ -208,7 +219,7 @@ sub bryggan_day
   {
     $lunch = "&mdash;";
   }
-  return "<tr><td>Bryggan</td><td>".$lunch."</td></tr>";
+  return "<td>Bryggan</td><td>".$lunch."</td>";
 }
 
 sub ideonalfa_day
@@ -237,7 +248,7 @@ sub ideonalfa_day
     $lunch = "&mdash;";
   }
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<tr><td>Ideon Alfa</td><td>".$lunch."</td></tr>";
+  return "<td>Ideon Alfa</td><td>".$lunch."</td>";
 }
 
 sub annaskok_day
@@ -263,5 +274,5 @@ sub annaskok_day
   {
     $lunch = "&mdash;";
   }
-  return "<tr><td>Annas Kök</td><td>".$lunch."</td></tr>";
+  return "<td>Annas Kök</td><td>".$lunch."</td>";
 }
