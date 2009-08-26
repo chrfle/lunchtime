@@ -2,12 +2,12 @@ table.lm {
   border-spacing: 0;
 }
 
-table.lm.tbody {
+table.lm tbody.lm {
   font-size: small;
   vertical-align: top;
 }
 
-table.lm tr.dayhead {
+table.lm tr.day {
   font-size: x-large;
   font-weight: bold;
   height: 2em;

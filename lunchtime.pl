@@ -96,10 +96,10 @@ $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 2
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
 print "<table class=\"lm\">\n";
-print "<tbody>\n";
+print "<tbody class=\"lm\">\n";
 foreach $day (@days_match)
 {
-  print "<tr class=\"dayhead\"><td>$days_print{$day}</td></tr>\n";
+  print "<tr class=\"day\"><td>$days_print{$day}</td></tr>\n";
   print $menu{$day};
 }
 print "</tbody>\n";
