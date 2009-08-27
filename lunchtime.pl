@@ -83,8 +83,9 @@ foreach $url (keys %urls)
   }
 }
 
-print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
-print "<html>\n";
+#print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
+print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n";
+print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n";
 print "<head>\n";
 print "  <title>Lunch time</title>\n";
 print "  <link rel=\"stylesheet\" type=\"text/css\" href=\"static/lunchtime.css\" />\n";
@@ -99,13 +100,11 @@ $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 2
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
 print "<table class=\"lm\">\n";
-print "<tbody>\n";
 foreach $day (@days_match)
 {
   print "  <tr><th>$days_print{$day}</th></tr>\n";
   print $menu{$day};
 }
-print "</tbody>\n";
 print "</table>\n";
 
 print "<div class=\"footer\">\n";
@@ -113,6 +112,10 @@ print "  <p>Generated at $timestamp by acatenango</p>\n";
 print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
 print "    <img src=\"http://www.w3.org/Icons/valid-xhtmlbasic10\"\n";
 print "         alt=\"Valid XHTML Basic 1.0\" height=\"31\" width=\"88\" /></a>\n";
+print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
+print "    <img src=\"http://www.w3.org/Icons/valid-xhtml11\"\n";
+print "         alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" /></a>\n";
+
 print "</div>\n";
 print "</body>\n";
 print "</html>\n";
@@ -234,8 +237,8 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
+    #$lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    #$lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
