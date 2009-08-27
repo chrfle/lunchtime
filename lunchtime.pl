@@ -67,7 +67,7 @@ foreach $url (keys %urls)
         $lunch = $urls{$url}($body, $day);
         #print "$lunch\n";
   
-        $menu{$day} .= "<tr class=\"$lb\">$lunch</tr>\n";
+        $menu{$day} .= "    <tr class=\"$lb\">$lunch</tr>\n";
       }
     }
     else
@@ -83,12 +83,14 @@ foreach $url (keys %urls)
   }
 }
 
+print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
 print "<html>\n";
 print "<head>\n";
-print "<link rel=\"stylesheet\" href=\"static/lunchtime.css\" type=\"text/css\" />\n";
-print "<meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\">\n";
+print "  <title>Lunch time</title>\n";
+print "  <link rel=\"stylesheet\" type=\"text/css\" href=\"static/lunchtime.css\" />\n";
+print "  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />\n";
 print "</head>\n";
-print "<body style=\"font-family:verdana\">\n";
+print "<body>\n";
 $timestamp = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($ntime));
 
 $dayofweek = (localtime($ntime))[6];
@@ -100,17 +102,18 @@ print "<table class=\"lm\">\n";
 print "<tbody>\n";
 foreach $day (@days_match)
 {
-  print "<thead>\n";
-  print "<th>$days_print{$day}</th>\n";
-  print "</thead>\n";
+  print "  <tr><th>$days_print{$day}</th></tr>\n";
   print $menu{$day};
 }
 print "</tbody>\n";
 print "</table>\n";
 
-print "<br><br>\n";
-print "<hr size=\"0\">\n";
-print "<font color=\"#B0B0B0\" size=\"1\">Generated at $timestamp by acatenango</font>\n";
+print "<div class=\"footer\">\n";
+print "  <p>Generated at $timestamp by acatenango</p>\n";
+print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
+print "    <img src=\"http://www.w3.org/Icons/valid-xhtmlbasic10\"\n";
+print "         alt=\"Valid XHTML Basic 1.0\" height=\"31\" width=\"88\" /></a>\n";
+print "</div>\n";
 print "</body>\n";
 print "</html>\n";
 
@@ -130,7 +133,9 @@ sub sarimner_day
     $lunch =~ s/Husman:\s*/ :: /; # choice separator
     $lunch =~ s/Vegetariska.*?:\s*/ :: /; # choice separator
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&amp;/o/g;
+
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -142,7 +147,7 @@ sub sarimner_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
-  return "<td>Särimner&nbsp;Hilda</td<td><ul><li>".$lunch."</li></ul></td>";
+  return "<td>Särimner&nbsp;Hilda</td><td><ul><li>".$lunch."</li></ul></td>";
 }
 
 sub finninn_day
@@ -158,7 +163,9 @@ sub finninn_day
 
     $lunch =~ s/<\/p>/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&amp;/o/g;
+
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -186,7 +193,8 @@ sub gladimat_day
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&amp;/o/g;
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -226,7 +234,8 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/&amp;/o/g;
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -252,7 +261,8 @@ sub ideonalfa_day
     $lunch =~ s/<br>/ - /g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/&amp;/o/g;
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -284,7 +294,8 @@ sub annaskok_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/&amp;/o/g;
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
@@ -294,5 +305,5 @@ sub annaskok_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
-  return "<td>Annas Kok</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<td>Annas Kök</td><td><ul><li>".$lunch."</li></ul></td>";
 }

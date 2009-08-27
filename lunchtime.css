@@ -1,3 +1,15 @@
+body {
+  font-family: verdana;
+}
+
+a:link {
+  color: #FFFFFF;
+}
+
+a:visited {
+  color: #FFFFFF;
+}
+
 table.lm {
   border-spacing: 0;
 }
@@ -31,4 +43,11 @@ table.lm tr.lght {
 table.lm tr.dark {
   vertical-align: top;
   background-color: #E8E8E8;
+}
+
+div.footer {
+  margin-top: 3em;
+  border-top: 1px solid #AAA;
+  font-size: x-small;
+  color: #AAA;
 }
