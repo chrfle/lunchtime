@@ -2,22 +2,33 @@ table.lm {
   border-spacing: 0;
 }
 
-table.lm tbody.lm {
+table.lm tbody {
   font-size: small;
-  vertical-align: top;
 }
 
-table.lm tr.day {
+table.lm th {
   font-size: x-large;
   font-weight: bold;
   height: 2em;
   vertical-align: bottom;
 }
 
+table.lm td {
+  padding: 2px;
+  border-bottom: 1px solid #AAA;
+}
+
+table.lm ul {
+  margin: 0;
+  padding-left: 2.5em;
+}
+
 table.lm tr.lght {
+  vertical-align: top;
   background-color: #F8F8F8;
 }
 
 table.lm tr.dark {
-  background-color: #E0E0E0;
+  vertical-align: top;
+  background-color: #E8E8E8;
 }

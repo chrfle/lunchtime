@@ -22,6 +22,7 @@ use POSIX;
               ,"Torsdag", "Torsdag"
               ,"Fredag", "Fredag");
 
+
 $ntime = time;
 $weeknum = POSIX::strftime("%V", localtime($ntime));
 $yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
@@ -96,10 +97,12 @@ $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 2
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
 print "<table class=\"lm\">\n";
-print "<tbody class=\"lm\">\n";
+print "<tbody>\n";
 foreach $day (@days_match)
 {
-  print "<tr class=\"day\"><td>$days_print{$day}</td></tr>\n";
+  print "<thead>\n";
+  print "<th>$days_print{$day}</th>\n";
+  print "</thead>\n";
   print $menu{$day};
 }
 print "</tbody>\n";
@@ -138,7 +141,8 @@ sub sarimner_day
   {
     $lunch = "&mdash;";
   }
-  return "<td>Särimner&nbsp;Hilda</td><td>".$lunch."</td>";
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  return "<td>Särimner&nbsp;Hilda</td<td><ul><li>".$lunch."</li></ul></td>";
 }
 
 sub finninn_day
@@ -165,8 +169,9 @@ sub finninn_day
   {
     $lunch = "&mdash;";
   }
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<td>Finn Inn</td><td>".$lunch."</td>";
+  return "<td>Finn Inn</td><td><ul><li>".$lunch."</li></ul></td>";
 }
 
 sub gladimat_day
@@ -192,6 +197,17 @@ sub gladimat_day
   else
   {
     $lunch = "&mdash;";
+  }
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  # add list tags before fiddling with lowcase/upcase, it is easier to find first char in every dish then
+  $lunch =~ tr/[A-Z]ÅÄÖ/[a-z]åäö/; # lowercase everything
+  $lunch = "<ul><li>".$lunch."</li></ul>";
+  # uppercase first char after >
+  while ($lunch =~ />([a-z])/)
+  {
+    my $lch = $1;
+    my $uch = uc($lch);
+    $lunch =~ s/>$lch/>$uch/g;
   }
   return "<td>Glad i mat</td><td>".$lunch."</td>";
 }
@@ -219,7 +235,8 @@ sub bryggan_day
   {
     $lunch = "&mdash;";
   }
-  return "<td>Bryggan</td><td>".$lunch."</td>";
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  return "<td>Bryggan</td><td><ul><li>".$lunch."</li></ul></td>";
 }
 
 sub ideonalfa_day
@@ -242,13 +259,15 @@ sub ideonalfa_day
     #replace  - as separator between lunch choices, but first remove the first sep
     $lunch =~ s/^-\s+//;
     $lunch =~ s/ - / :: /g;
+    $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
   }
   else
   {
     $lunch = "&mdash;";
   }
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<td>Ideon Alfa</td><td>".$lunch."</td>";
+  return "<td>Ideon Alfa</td><td><ul><li>".$lunch."</li></ul></td>";
 }
 
 sub annaskok_day
@@ -274,5 +293,6 @@ sub annaskok_day
   {
     $lunch = "&mdash;";
   }
-  return "<td>Annas Kök</td><td>".$lunch."</td>";
+  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  return "<td>Annas Kok</td><td><ul><li>".$lunch."</li></ul></td>";
 }
