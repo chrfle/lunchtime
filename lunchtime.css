@@ -27,6 +27,7 @@ table.lm th {
 
 table.lm td {
   padding: 2px;
+  vertical-align: top;
   border-bottom: 1px solid #AAA;
 }
 
@@ -36,12 +37,10 @@ table.lm ul {
 }
 
 table.lm tr.lght {
-  vertical-align: top;
   background-color: #F8F8F8;
 }
 
 table.lm tr.dark {
-  vertical-align: top;
   background-color: #E8E8E8;
 }
 
