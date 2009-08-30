@@ -2,12 +2,8 @@ body {
   font-family: verdana;
 }
 
-a:link {
-  color: #FFFFFF;
-}
-
-a:visited {
-  color: #FFFFFF;
+img {
+  border: 0;
 }
 
 table.lm {
