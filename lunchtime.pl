@@ -64,10 +64,17 @@ foreach $url (keys %urls)
       }
       foreach $day (@days_match)
       {
-        $lunch = $urls{$url}($body, $day);
-        #print "$lunch\n";
-  
-        $menu{$day} .= "    <tr class=\"$lb\">$lunch</tr>\n";
+        # check if we have menu for correct week
+        if ($body =~ /vecka.+$weeknum/i)
+        {
+          $lunch = $urls{$url}($body, $day);
+          #print "$lunch\n";
+        }
+        else
+        {
+          $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+        } 
+        $menu{$day} .= "    <tr class=\"$lb\"><td>".&namefromurl($url)."</td><td>$lunch</td></tr>\n";
       }
     }
     else
@@ -150,7 +157,7 @@ sub sarimner_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
-  return "<td>Särimner&nbsp;Hilda</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<ul><li>".$lunch."</li></ul>";
 }
 
 sub finninn_day
@@ -181,7 +188,7 @@ sub finninn_day
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<td>Finn Inn</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<ul><li>".$lunch."</li></ul>";
 }
 
 sub gladimat_day
@@ -220,7 +227,7 @@ sub gladimat_day
     my $uch = uc($lch);
     $lunch =~ s/>$lch/>$uch/g;
   }
-  return "<td>Glad i mat</td><td>".$lunch."</td>";
+  return $lunch;
 }
 
 sub bryggan_day
@@ -248,7 +255,7 @@ sub bryggan_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
-  return "<td>Bryggan</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<ul><li>".$lunch."</li></ul>";
 }
 
 sub ideonalfa_day
@@ -280,7 +287,7 @@ sub ideonalfa_day
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
-  return "<td>Ideon Alfa</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<ul><li>".$lunch."</li></ul>";
 }
 
 sub annaskok_day
@@ -308,5 +315,40 @@ sub annaskok_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
-  return "<td>Annas Kök</td><td><ul><li>".$lunch."</li></ul></td>";
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub namefromurl
+{
+  my ($url) = @_;
+  my $name = '';
+  if ($url =~ /finninn/)
+  {
+    $name = "Finn&nbsp;Inn";
+  }
+  elsif ($url =~ /gladimat/)
+  {
+    $name = "Glad&nbsp;i&nbsp;Mat";
+  }
+  elsif ($url =~ /cafebryggan/)
+  {
+    $name = "Cafe&nbsp;Bryggan";
+  }
+  elsif ($url =~ /restaurant.ideon/)
+  {
+    $name = "Ideon&nbsp;Alfa";
+  }
+  elsif ($url =~ /sarimner/)
+  {
+    $name = "Särimner&nbsp;Hilda";
+  }
+  elsif ($url =~ /annaskok/)
+  {
+    $name = "Annas&nbsp;Kök";
+  }
+  else
+  {
+    $name = "Restaurant&nbsp;Okänd";
+  }
+  return $name;
 }
