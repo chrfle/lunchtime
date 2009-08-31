@@ -102,7 +102,7 @@ print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
 print "<table class=\"lm\">\n";
 foreach $day (@days_match)
 {
-  print "  <tr><th>$days_print{$day}</th></tr>\n";
+  print "  <tr><th colspan=2>$days_print{$day}</th></tr>\n";
   print $menu{$day};
 }
 print "</table>\n";

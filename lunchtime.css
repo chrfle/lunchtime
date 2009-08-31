@@ -18,7 +18,10 @@ table.lm th {
   font-size: x-large;
   font-weight: bold;
   height: 2em;
+  text-align: left;
+  padding-left: 0.5em;
   vertical-align: bottom;
+  border-bottom: 1px solid #AAA;
 }
 
 table.lm td {
