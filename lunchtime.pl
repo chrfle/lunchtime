@@ -79,7 +79,7 @@ if ($req = $http->request($url_req))
       {
         $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
       } 
-      $menu{$day} .= "  <tr class=\"$lb\"><th>".&namefromurl($url)."</th><td>$lunch</td></tr>\n";
+      $menu{$day} .= "    <tr class=\"$lb\"><th>".&namefromurl($url)."</th><td>$lunch</td></tr>\n";
     }
   }
   else
