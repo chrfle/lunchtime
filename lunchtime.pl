@@ -7,13 +7,13 @@ use Encode;
 use POSIX;
 
 %urls = (
-   'http://www.finninn.com/finninn/dagens.html', \&finninn_day
-  ,'http://www.gladimat.ideon.se/index.html', \&gladimat_day
-  ,'http://www.cafebryggan.com/', \&bryggan_day
-  ,'http://www.restaurant.ideon.se/', \&ideonalfa_day
-  ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
-  ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
-        );
+ 'http://www.finninn.com/finninn/dagens.html', \&finninn_day
+,'http://www.gladimat.ideon.se/index.html', \&gladimat_day
+,'http://www.cafebryggan.com/', \&bryggan_day
+,'http://www.restaurant.ideon.se/', \&ideonalfa_day
+,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
+,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
+      );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
 %days_print = ("ndag", "Måndag"
@@ -22,6 +22,11 @@ use POSIX;
               ,"Torsdag", "Torsdag"
               ,"Fredag", "Fredag");
 
+%days_ref = ("ndag", "mandag"
+            ,"Tisdag", "tisdag"
+            ,"Onsdag", "onsdag"
+            ,"Torsdag", "torsdag"
+            ,"Fredag", "fredag");
 
 $ntime = time;
 $weeknum = POSIX::strftime("%V", localtime($ntime));
@@ -30,64 +35,64 @@ $yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
 $lb = "dark";
 foreach $url (keys %urls)
 {
-  if ($lb eq "lght")
+if ($lb eq "lght")
+{
+  $lb = "dark";
+}
+else
+{
+  $lb= "lght";
+}
+$http = new HTTP::Lite;
+$url_req = $url;
+if ($url_req =~ /sarimner/)
+{
+  # url for sarimner has week info in url which needs to be modified
+  $url_req =~ s/YYYY-WW/$yearweek/;
+}
+if ($req = $http->request($url_req))
+{
+  if ($req eq "200")
   {
-    $lb = "dark";
-  }
-  else
-  {
-    $lb= "lght";
-  }
-  $http = new HTTP::Lite;
-  $url_req = $url;
-  if ($url_req =~ /sarimner/)
-  {
-    # url for sarimner has week info in url which needs to be modified
-    $url_req =~ s/YYYY-WW/$yearweek/;
-  }
-  if ($req = $http->request($url_req))
-  {
-    if ($req eq "200")
+    $body = $http->body();
+    if ($url =~ /pdf$/)
     {
-      $body = $http->body();
-      if ($url =~ /pdf$/)
-      {
-        $pdffile = 'sarimner.pdf';
-        open(PDF, ">$pdffile");
-        print PDF $body;
-        close PDF;
-        my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
-        unlink $pdffile;
-        #print @textlist;
-        $body = join("<nl>", @textlist);
-        #print $body;
-      }
-      foreach $day (@days_match)
-      {
-        # check if we have menu for correct week
-        if ($body =~ /vecka.+$weeknum/i)
-        {
-          $lunch = $urls{$url}($body, $day);
-          #print "$lunch\n";
-        }
-        else
-        {
-          $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
-        } 
-        $menu{$day} .= "    <tr class=\"$lb\"><td>".&namefromurl($url)."</td><td>$lunch</td></tr>\n";
-      }
+      $pdffile = 'sarimner.pdf';
+      open(PDF, ">$pdffile");
+      print PDF $body;
+      close PDF;
+      my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
+      unlink $pdffile;
+      #print @textlist;
+      $body = join("<nl>", @textlist);
+      #print $body;
     }
-    else
+    foreach $day (@days_match)
     {
-      print "Request for $url failed ($req), ".$http->status_message()."...\n";
-      next;
+      # check if we have menu for correct week
+      if ($body =~ /vecka.+$weeknum/i)
+      {
+        $lunch = $urls{$url}($body, $day);
+        #print "$lunch\n";
+      }
+      else
+      {
+        $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+      } 
+      $menu{$day} .= "  <tr class=\"$lb\"><th>".&namefromurl($url)."</th><td>$lunch</td></tr>\n";
     }
   }
   else
   {
-    print "request for url $url failed ($!)...\n";
+    print "Request for $url failed ($req), ".$http->status_message()."...\n";
     next;
   }
+}
+else
+{
+  print "request for url $url failed ($!)...\n";
+  next;
+}
 }
 
 #print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
@@ -106,13 +111,15 @@ $date_monday = POSIX::strftime("%Y-%m-%d", localtime($ntime - (($dayofweek - 1) 
 $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 24 * 60 * 60)));
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
-print "<table class=\"lm\">\n";
 foreach $day (@days_match)
 {
-  print "  <tr><th colspan=2>$days_print{$day}</th></tr>\n";
+  print "<h2><a id=\"$days_ref{$day}\">$days_print{$day}</a></h2>\n";
+  print "<table class=\"lm\">\n";
+  print "  <tbody>\n";
   print $menu{$day};
+  print "  </tbody>\n";
+  print "</table>\n";
 }
-print "</table>\n";
 
 print "<div class=\"footer\">\n";
 print "  <p>Generated at $timestamp by acatenango</p>\n";

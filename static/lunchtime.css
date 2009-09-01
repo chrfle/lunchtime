@@ -6,8 +6,15 @@ img {
   border: 0;
 }
 
+h2 {
+  margin-top: 1.5em;
+  margin-bottom: 0.2em;
+  padding-left: 0.5em;
+}
+
 table.lm {
   border-spacing: 0;
+  border-top: 1px solid #AAA;
   width: 55em;
 }
 
@@ -16,13 +23,11 @@ table.lm tbody {
 }
 
 table.lm th {
-  font-size: x-large;
-  font-weight: bold;
-  height: 2em;
+  font-weight: normal;
+  vertical-align: top;
   text-align: left;
-  padding-left: 0.5em;
-  vertical-align: bottom;
   border-bottom: 1px solid #AAA;
+  width: 8em;
 }
 
 table.lm td {
