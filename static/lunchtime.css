@@ -15,7 +15,6 @@ h2 {
 table.lm {
   border-spacing: 0;
   border-top: 1px solid #AAA;
-  width: 55em;
 }
 
 table.lm tbody {
@@ -26,13 +25,16 @@ table.lm th {
   font-weight: normal;
   vertical-align: top;
   text-align: left;
+  padding-left: 0.5em;
+  padding-top: 0.2em;
   border-bottom: 1px solid #AAA;
-  width: 8em;
 }
 
 table.lm td {
-  padding: 2px;
   vertical-align: top;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  padding-right: 1em;
   border-bottom: 1px solid #AAA;
 }
 

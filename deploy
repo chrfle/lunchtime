@@ -3,9 +3,6 @@
 dep_path=/home/pacs/bin
 www_path=/var/www
 echo "Deploying to path ${dep_path} and ${www_path}"
-cs=`cp -u -v ./lunchtime.pl ${dep_path}/lunchtime.pl`
-cs=${cs}`cp -u -v ./static/lunchtime.css ${www_path}/static/lunchtime.css`
-if [ -n "${cs}" ]; then
-  echo "Copied: ${cs}"
-fi
+echo `cp -u -v ./lunchtime.pl ${dep_path}/lunchtime.pl`
+echo `cp -u -v ./static/lunchtime.css ${www_path}/static/lunchtime.css`
 echo "Deployment done"
