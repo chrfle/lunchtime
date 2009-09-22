@@ -13,6 +13,7 @@ use POSIX;
 ,'http://www.restaurant.ideon.se/', \&ideonalfa_day
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
 ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
+,'http://www.fazeramica.se/templates/Fazer_Menu.aspx?id=113730&epslanguage=SV', \&scotlandyard_day
       );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -70,7 +71,7 @@ if ($req = $http->request($url_req))
     foreach $day (@days_match)
     {
       # check if we have menu for correct week
-      if ($body =~ /vecka.+$weeknum/i)
+      if ($body =~ /vecka.+$weeknum/i || $body =~ /v\.$weeknum/i)
       {
         $lunch = $urls{$url}($body, $day);
         #print "$lunch\n";
@@ -325,6 +326,22 @@ sub annaskok_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
+sub scotlandyard_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<p>.*?$day.*?<br \/>(.*?)<\/p>/s)
+  {
+    $lunch = $1;
+    $lunch =~ s/<br \/>/<\/li><li>/g;
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
 sub namefromurl
 {
   my ($url) = @_;
@@ -352,6 +369,10 @@ sub namefromurl
   elsif ($url =~ /annaskok/)
   {
     $name = "Annas&nbsp;Kök";
+  }
+  elsif ($url =~ /fazeramica/)
+  {
+    $name = "Gotland&nbsp;Yard";
   }
   else
   {
