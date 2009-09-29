@@ -13,7 +13,7 @@ use POSIX;
 ,'http://www.restaurant.ideon.se/', \&ideonalfa_day
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
 ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
-,'http://www.fazeramica.se/templates/Fazer_Menu.aspx?id=113730&epslanguage=SV', \&scotlandyard_day
+,'http://www.fazeramica.se/templates/Fazer_Menu.aspx?id=114576&epslanguage=SV', \&scotlandyard_day
       );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -36,64 +36,78 @@ $yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
 $lb = "dark";
 foreach $url (keys %urls)
 {
-if ($lb eq "lght")
-{
-  $lb = "dark";
-}
-else
-{
-  $lb= "lght";
-}
-$http = new HTTP::Lite;
-$url_req = $url;
-if ($url_req =~ /sarimner/)
-{
-  # url for sarimner has week info in url which needs to be modified
-  $url_req =~ s/YYYY-WW/$yearweek/;
-}
-if ($req = $http->request($url_req))
-{
-  if ($req eq "200")
+  if ($lb eq "lght")
   {
-    $body = $http->body();
-    if ($url =~ /pdf$/)
+    $lb = "dark";
+  }
+  else
+  {
+    $lb= "lght";
+  }
+  $http = new HTTP::Lite;
+  $url_req = $url;
+  if ($url_req =~ /sarimner/)
+  {
+    # url for sarimner has week info in url which needs to be modified
+    $url_req =~ s/YYYY-WW/$yearweek/;
+  }
+  if ($req = $http->request($url_req))
+  {
+    if ($req eq "200")
     {
-      $pdffile = 'sarimner.pdf';
-      open(PDF, ">$pdffile");
-      print PDF $body;
-      close PDF;
-      my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
-      unlink $pdffile;
-      #print @textlist;
-      $body = join("<nl>", @textlist);
-      #print $body;
-    }
-    foreach $day (@days_match)
-    {
-      # check if we have menu for correct week
-      if ($body =~ /vecka.+$weeknum/i || $body =~ /v\.$weeknum/i)
+      $body = $http->body();
+      if ($url =~ /pdf$/)
       {
-        $lunch = $urls{$url}($body, $day);
-        #print "$lunch\n";
+        $pdffile = 'sarimner.pdf';
+        open(PDF, ">$pdffile");
+        print PDF $body;
+        close PDF;
+        my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
+        unlink $pdffile;
+        #print @textlist;
+        $body = join("<nl>", @textlist);
       }
       else
       {
-        $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+        $body =~ s/\n/ /g; # convert all newlines to one space
+      }
+      #print $body;
+    }
+    else
+    {
+      print "<!-- Request for $url_req failed ($req) -->\n";
+    }
+    foreach $day (@days_match)
+    {
+      if ($req eq "200")
+      {
+        # check if we have menu for correct week
+        if ($body =~ /vecka\D*$weeknum/i || $body =~ /v\.$weeknum/i)
+        {
+          $lunch = $urls{$url}($body, $day);
+          #print "$lunch\n";
+        }
+        else
+        {
+          open(F, ">>lunchtime_fail.log");
+          print F "-- start ---------- $url -- $day -------------\n";
+          print F $body;
+          print F "-- end -- --------- $url -- $day -------------\n";
+          close F;
+          $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+        }
       } 
+      else
+      {
+        $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
+      }
       $menu{$day} .= "    <tr class=\"$lb\"><th>".&namefromurl($url)."</th><td>$lunch</td></tr>\n";
     }
   }
   else
   {
-    print "Request for $url failed ($req), ".$http->status_message()."...\n";
-    next;
+    print "request for url $url failed ($!)...\n";
   }
-}
-else
-{
-  print "request for url $url failed ($!)...\n";
-  next;
-}
 }
 
 #print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
@@ -143,7 +157,6 @@ sub sarimner_day
   if ($htmlbody =~ /<br>.*?$day(.*?)(<br*>\d|<nl>Chefs)/s)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
@@ -175,7 +188,6 @@ sub finninn_day
   if ($htmlbody =~ /<p>.*?$day(.*?)<\/td>/s)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
@@ -206,7 +218,6 @@ sub gladimat_day
   if ($htmlbody =~ /<tr>.*?$day.*?<\/td>(.*?)<\/td>/s)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
@@ -245,7 +256,6 @@ sub bryggan_day
   if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.*?)<\/p>/is)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<br \/>/ :: /g; # choice separator
@@ -273,7 +283,6 @@ sub ideonalfa_day
   if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.*?)<br><br>/s)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<br>/ - /g;
@@ -305,7 +314,6 @@ sub annaskok_day
   if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:* (.*?)<\/font>/is)
   {
     $lunch = $1;
-    $lunch =~ s/\n//g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<br \/>/ :: /g; # choice separator
