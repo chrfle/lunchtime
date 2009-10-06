@@ -7,14 +7,14 @@ use Encode;
 use POSIX;
 
 %urls = (
- 'http://www.finninn.com/finninn/dagens.html', \&finninn_day
-,'http://www.gladimat.ideon.se/index.html', \&gladimat_day
-,'http://www.cafebryggan.com/', \&bryggan_day
-,'http://www.restaurant.ideon.se/', \&ideonalfa_day
-,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', \&sarimner_day # sarimner
-,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', \&annaskok_day
-,'http://www.fazeramica.se/templates/Fazer_Menu.aspx?id=114576&epslanguage=SV', \&scotlandyard_day
-      );
+ 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weekdaytest_long]
+,'http://www.gladimat.ideon.se/index.html', [\&gladimat_day, \&weekdaytest_long]
+,'http://www.cafebryggan.com/', [\&bryggan_day, \&weekdaytest_long]
+,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weekdaytest_long]
+,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weekdaytest_long]
+,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weekdaytest_long]
+,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none]
+        );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
 %days_print = ("ndag", "Måndag"
@@ -82,9 +82,9 @@ foreach $url (keys %urls)
       if ($req eq "200")
       {
         # check if we have menu for correct week
-        if ($body =~ /vecka\D*$weeknum/i || $body =~ /v\.$weeknum/i)
+        if ($urls{$url}[1]->($body))
         {
-          $lunch = $urls{$url}($body, $day);
+          $lunch = $urls{$url}[0]->($body, $day);
           #print "$lunch\n";
         }
         else
@@ -338,7 +338,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day.*?<br \/>(.*?)<\/p>/s)
+  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.*?)<\/p>/s)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/<\/li><li>/g;
@@ -349,6 +349,26 @@ sub scotlandyard_day
   }
   return "<ul><li>".$lunch."</li></ul>";
 }
+
+
+sub weekdaytest_short
+{
+  my ($body) = @_;
+  return ($body =~ /v\.$weeknum/i);
+}
+
+sub weekdaytest_long
+{
+  my ($body) = @_;
+  return ($body =~ /vecka\D*$weeknum/i);
+}
+
+sub weekdaytest_none
+{
+  # no weekday test means always pass
+  return 1;
+}
+
 
 sub namefromurl
 {
