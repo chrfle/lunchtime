@@ -7,13 +7,13 @@ use Encode;
 use POSIX;
 
 %urls = (
- 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weekdaytest_long]
-,'http://www.gladimat.ideon.se/index.html', [\&gladimat_day, \&weekdaytest_long]
-,'http://www.cafebryggan.com/', [\&bryggan_day, \&weekdaytest_long]
-,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weekdaytest_long]
-,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weekdaytest_long]
-,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weekdaytest_long]
-,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none]
+ 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weekdaytest_long, "Finn&nbsp;Inn"]
+,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weekdaytest_long, "Hojdpoonkten"]
+,'http://www.cafebryggan.com/', [\&bryggan_day, \&weekdaytest_long, "Cafe&nbsp;Bryggan"]
+,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weekdaytest_long, "Ideon&nbsp;Alfa"]
+,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weekdaytest_long, "Särimner&nbsp;Hilda"]
+,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weekdaytest_long, "Annas&nbsp;Kök"]
+,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none, "Gotland&nbsp;Yard"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -101,7 +101,7 @@ foreach $url (keys %urls)
       {
         $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
       }
-      $menu{$day} .= "    <tr class=\"$lb\"><th>".&namefromurl($url)."</th><td>$lunch</td></tr>\n";
+      $menu{$day} .= "    <tr class=\"$lb\"><th>".$urls{$url}[2]."</th><td>$lunch</td></tr>\n";
     }
   }
   else
@@ -177,7 +177,7 @@ sub sarimner_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   return "<ul><li>".$lunch."</li></ul>";
 }
 
@@ -185,7 +185,7 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day(.*?)<\/td>/s)
+  if ($htmlbody =~ /<p>.*?$day(.*?)<\/td>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -206,7 +206,7 @@ sub finninn_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
@@ -215,7 +215,7 @@ sub gladimat_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<tr>.*?$day.*?<\/td>(.*?)<\/td>/s)
+  if ($htmlbody =~ /<tr>.*?$day.*?<\/td>(.*?)<\/td>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -235,7 +235,7 @@ sub gladimat_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   # add list tags before fiddling with lowcase/upcase, it is easier to find first char in every dish then
   $lunch =~ tr/[A-Z]ÅÄÖ/[a-z]åäö/; # lowercase everything
   $lunch = "<ul><li>".$lunch."</li></ul>";
@@ -249,11 +249,40 @@ sub gladimat_day
   return $lunch;
 }
 
+sub hojdpunkten_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)(<strong>\w+dag<\/strong>|<h2>)/)
+  {
+    $lunch = $1;
+    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/>&nbsp;<\/p>/> :: /g;
+    $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
+    $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/\s+/ /g;
+
+    $lunch =~ s/<.*?>//g;
+    $lunch =~ s/^\s+//;
+    $lunch =~ s/\s+$//;
+    # remove any extra choice separators at the end
+    $lunch =~ s/[: ]+$//;
+    $lunch =~ s/^[: ]+//; # and beginning
+    $lunch =~ s/[: ]+ Sallad.*//g; # and remove Sallad which is always included
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
 sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.*?)<\/p>/is)
+  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -272,7 +301,7 @@ sub bryggan_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   return "<ul><li>".$lunch."</li></ul>";
 }
 
@@ -280,7 +309,7 @@ sub ideonalfa_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.*?)<br><br>/s)
+  if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.*?)<br><br>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -302,7 +331,7 @@ sub ideonalfa_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
@@ -330,7 +359,7 @@ sub annaskok_day
   {
     $lunch = "&mdash;";
   }
-  $lunch =~ s/ :: /<\/li><li>/g; # change separator to html list
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   return "<ul><li>".$lunch."</li></ul>";
 }
 
@@ -338,7 +367,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.*?)<\/p>/s)
+  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.*?)<\/p>/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/<\/li><li>/g;
@@ -367,44 +396,4 @@ sub weekdaytest_none
 {
   # no weekday test means always pass
   return 1;
-}
-
-
-sub namefromurl
-{
-  my ($url) = @_;
-  my $name = '';
-  if ($url =~ /finninn/)
-  {
-    $name = "Finn&nbsp;Inn";
-  }
-  elsif ($url =~ /gladimat/)
-  {
-    $name = "Glad&nbsp;i&nbsp;Mat";
-  }
-  elsif ($url =~ /cafebryggan/)
-  {
-    $name = "Cafe&nbsp;Bryggan";
-  }
-  elsif ($url =~ /restaurant.ideon/)
-  {
-    $name = "Ideon&nbsp;Alfa";
-  }
-  elsif ($url =~ /sarimner/)
-  {
-    $name = "Särimner&nbsp;Hilda";
-  }
-  elsif ($url =~ /annaskok/)
-  {
-    $name = "Annas&nbsp;Kök";
-  }
-  elsif ($url =~ /fazeramica/)
-  {
-    $name = "Gotland&nbsp;Yard";
-  }
-  else
-  {
-    $name = "Restaurant&nbsp;Okänd";
-  }
-  return $name;
 }
