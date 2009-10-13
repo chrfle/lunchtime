@@ -8,12 +8,12 @@ use POSIX;
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weekdaytest_long, "Finn&nbsp;Inn"]
-,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weekdaytest_long, "Hojdpoonkten"]
+,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weekdaytest_long, "Höjdpunkten"]
 ,'http://www.cafebryggan.com/', [\&bryggan_day, \&weekdaytest_long, "Cafe&nbsp;Bryggan"]
 ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weekdaytest_long, "Ideon&nbsp;Alfa"]
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weekdaytest_long, "Särimner&nbsp;Hilda"]
 ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weekdaytest_long, "Annas&nbsp;Kök"]
-,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none, "Gotland&nbsp;Yard"]
+,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none, "Scotland&nbsp;Yard"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
