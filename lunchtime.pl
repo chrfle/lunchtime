@@ -168,10 +168,8 @@ sub sarimner_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -197,10 +195,8 @@ sub finninn_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -209,44 +205,6 @@ sub finninn_day
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
-}
-
-sub gladimat_day
-{
-  my ($htmlbody, $day) = @_;
-  my $lunch = '';
-  if ($htmlbody =~ /<tr>.*?$day.*?<\/td>(.*?)<\/td>/)
-  {
-    $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
-    $lunch =~ s/\s+/ /g;
-
-    $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    #replace  - as separator between lunch choices, but first remove the first sep
-    $lunch =~ s/^-\s*//;
-    $lunch =~ s/\s+-\s*/ :: /g;
-  }
-  else
-  {
-    $lunch = "&mdash;";
-  }
-  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  # add list tags before fiddling with lowcase/upcase, it is easier to find first char in every dish then
-  $lunch =~ tr/[A-Z]ÅÄÖ/[a-z]åäö/; # lowercase everything
-  $lunch = "<ul><li>".$lunch."</li></ul>";
-  # uppercase first char after >
-  while ($lunch =~ />([a-z])/)
-  {
-    my $lch = $1;
-    my $uch = uc($lch);
-    $lunch =~ s/>$lch/>$uch/g;
-  }
-  return $lunch;
 }
 
 sub hojdpunkten_day
@@ -258,16 +216,15 @@ sub hojdpunkten_day
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/>&nbsp;<\/p>/> :: /g;
-    $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
+    #$lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
+    $lunch =~ s/<span style="color: #c0c0c0.*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
-    $lunch =~ s/^[: ]+//; # and beginning
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
     $lunch =~ s/[: ]+ Sallad.*//g; # and remove Sallad which is always included
   }
   else
@@ -291,11 +248,8 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    #$lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    #$lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -352,8 +306,8 @@ sub annaskok_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
