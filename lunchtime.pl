@@ -31,7 +31,8 @@ use POSIX;
 
 $ntime = time;
 $weeknum = POSIX::strftime("%V", localtime($ntime));
-$yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
+$weeknum =~ s/^0//; # remove any 0 padding
+$yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum;
 
 $lb = "dark";
 foreach $url (keys %urls)
@@ -226,6 +227,7 @@ sub hojdpunkten_day
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
     $lunch =~ s/[: ]+ Sallad.*//g; # and remove Sallad which is always included
+    $lunch =~ s/::\s+::/::/g;
   }
   else
   {
@@ -280,6 +282,7 @@ sub ideonalfa_day
     $lunch =~ s/^-\s+//;
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
+    $lunch =~ s/::\s+::/::/g;
   }
   else
   {
