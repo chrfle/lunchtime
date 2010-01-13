@@ -7,13 +7,13 @@ use Encode;
 use POSIX;
 
 %urls = (
- 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weekdaytest_long, "Finn&nbsp;Inn"]
-,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weekdaytest_long, "Höjdpunkten"]
-,'http://www.cafebryggan.com/', [\&bryggan_day, \&weekdaytest_long, "Cafe&nbsp;Bryggan"]
-,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weekdaytest_long, "Ideon&nbsp;Alfa"]
-,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weekdaytest_long, "Särimner&nbsp;Hilda"]
-,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weekdaytest_long, "Annas&nbsp;Kök"]
-,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weekdaytest_none, "Scotland&nbsp;Yard"]
+ 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
+,'http://www.cafebryggan.com/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
+,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
+,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
+,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
+,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -30,8 +30,10 @@ use POSIX;
             ,"Fredag", "fredag");
 
 $ntime = time;
-$weeknum = POSIX::strftime("%V", localtime($ntime));
-$yearweek = POSIX::strftime("%Y-%V", localtime($ntime));
+$weeknum_pad = POSIX::strftime("%V", localtime($ntime));
+$weeknum = $weeknum_pad;
+$weeknum =~ s/^0//; # remove any 0 padding
+$yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum;
 
 $lb = "dark";
 foreach $url (keys %urls)
@@ -154,7 +156,7 @@ sub sarimner_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   #print "BODY\n$htmlbody\n";
-  if ($htmlbody =~ /<br>.*?$day(.*?)(<br*>\d|<nl>Chefs)/s)
+  if ($htmlbody =~ /<br>.*?$day(.+?)(<br*>\d|<nl>Chefs)/s)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -168,10 +170,8 @@ sub sarimner_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -185,7 +185,7 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day(.*?)<\/td>/)
+  if ($htmlbody =~ /<p>.*?$day(.+?)<\/td>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -197,10 +197,8 @@ sub finninn_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -211,65 +209,31 @@ sub finninn_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
-sub gladimat_day
-{
-  my ($htmlbody, $day) = @_;
-  my $lunch = '';
-  if ($htmlbody =~ /<tr>.*?$day.*?<\/td>(.*?)<\/td>/)
-  {
-    $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
-    $lunch =~ s/\s+/ /g;
-
-    $lunch =~ s/<.*?>//g;
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    #replace  - as separator between lunch choices, but first remove the first sep
-    $lunch =~ s/^-\s*//;
-    $lunch =~ s/\s+-\s*/ :: /g;
-  }
-  else
-  {
-    $lunch = "&mdash;";
-  }
-  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  # add list tags before fiddling with lowcase/upcase, it is easier to find first char in every dish then
-  $lunch =~ tr/[A-Z]ÅÄÖ/[a-z]åäö/; # lowercase everything
-  $lunch = "<ul><li>".$lunch."</li></ul>";
-  # uppercase first char after >
-  while ($lunch =~ />([a-z])/)
-  {
-    my $lch = $1;
-    my $uch = uc($lch);
-    $lunch =~ s/>$lch/>$uch/g;
-  }
-  return $lunch;
-}
-
 sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)(<strong>.*?\w+dag.*?<\/strong>|<h2>)/)
+  # Finding a days choice is tricky, cut out everything between the day we are after and the next
+  # day (or h2). We only look for 'dag' in the next day, so we have to also have in a strong tag.
+  # However there may be <br /> before or after the day. Also there may be strongs in the day choice.
+  # Usually empty strongs, but we still need to take them into account.
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>]*?\w+dag.*?<\/strong>|<h2>)/)
   {
     $lunch = $1;
-    $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/>&nbsp;<\/p>/> :: /g;
     $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
     $lunch =~ s/<span style="color: #888888[^:]*?<\/span>//g; # another shade of grey
+    # removing english above must be done before we convert linebreaks to :: else we trip ourselves up
+    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/>&nbsp;<\/p>/> :: /g;
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
-    # remove any extra choice separators at the end
-    $lunch =~ s/[: ]+$//;
-    $lunch =~ s/^[: ]+//; # and beginning
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
     $lunch =~ s/[: ]+ Sallad.*//g; # and remove Sallad which is always included
+    $lunch =~ s/::\s+::/::/g;
   }
   else
   {
@@ -283,7 +247,7 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.+?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -292,11 +256,8 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    #$lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    #$lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -310,7 +271,7 @@ sub ideonalfa_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.*?)<br><br>/)
+  if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.+?)<br><br>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -327,6 +288,7 @@ sub ideonalfa_day
     $lunch =~ s/^-\s+//;
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
+    $lunch =~ s/::\s+::/::/g;
   }
   else
   {
@@ -341,7 +303,7 @@ sub annaskok_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:* (.*?)<\/font>/is)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:* (.+?)<\/font>/is)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -353,8 +315,8 @@ sub annaskok_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/^\s+//;
-    $lunch =~ s/\s+$//;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
@@ -368,7 +330,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.*?)<\/p>/)
+  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.+?)<\/p>/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/<\/li><li>/g;
@@ -380,20 +342,15 @@ sub scotlandyard_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
-
-sub weekdaytest_short
+sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /v\.$weeknum/i);
+  return ($body =~ /v\.&\#160;$weeknum/i || #only annas uses short week indicator (but uses &#160; for space
+          $body =~ /vecka\D*$weeknum/i ||
+	  $body =~ /vecka\D*$weeknum_pad/i);
 }
 
-sub weekdaytest_long
-{
-  my ($body) = @_;
-  return ($body =~ /vecka\D*$weeknum/i);
-}
-
-sub weekdaytest_none
+sub weeknumtest_none
 {
   # no weekday test means always pass
   return 1;
