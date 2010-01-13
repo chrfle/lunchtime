@@ -253,12 +253,13 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)(<strong>\w+dag<\/strong>|<h2>)/)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)(<strong>.*?\w+dag.*?<\/strong>|<h2>)/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/>&nbsp;<\/p>/> :: /g;
     $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
+    $lunch =~ s/<span style="color: #888888[^:]*?<\/span>//g; # another shade of grey
     $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
