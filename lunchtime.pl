@@ -143,9 +143,6 @@ foreach $day (@days_match)
 print "<div class=\"footer\">\n";
 print "  <p>Generated at $timestamp by lunchtime $version on acatenango</p>\n";
 print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
-print "    <img src=\"http://www.w3.org/Icons/valid-xhtmlbasic10\"\n";
-print "         alt=\"Valid XHTML Basic 1.0\" height=\"31\" width=\"88\" /></a>\n";
-print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
 print "    <img src=\"http://www.w3.org/Icons/valid-xhtml11\"\n";
 print "         alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" /></a>\n";
 
