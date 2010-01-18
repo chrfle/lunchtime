@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.0.0";
+$version = "1.0.1";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -216,12 +216,16 @@ sub hojdpunkten_day
   # day (or h2). We only look for 'dag' in the next day, so we have to also have in a strong tag.
   # However there may be <br /> before or after the day. Also there may be strongs in the day choice.
   # Usually empty strongs, but we still need to take them into account.
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>]*?\w+dag.*?<\/strong>|<h2>)/)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>&nbsp;]*?\w+dag.*?<\/strong>|<h2>)/)
   {
     $lunch = $1;
     $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
     $lunch =~ s/<span style="color: #888888[^:]*?<\/span>//g; # another shade of grey
-    # removing english above must be done before we convert linebreaks to :: else we trip ourselves up
+    $lunch =~ s/<span style="color: #999999[^:]*?<\/span>//g; # another shade of grey
+    # removing english above must be done before we convert linebreaks to :: else we trip ourselves up on the :
+    # english text is usually in <em> (but not always, so we still need the grey ones). Remove everything in <em>,
+    # but put in a <br /> since sometimes there is a break in the <em>. Any extra :: will be trimmed later.
+    $lunch =~ s/<em>.*?<\/em>/<br \/>/g;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/>&nbsp;<\/p>/> :: /g;
     $lunch =~ s/&nbsp;/ /g;
