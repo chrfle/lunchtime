@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.0.1";
+$version = "1.1.0";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -145,6 +145,9 @@ print "  <p>Generated at $timestamp by lunchtime $version on acatenango</p>\n";
 print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
 print "    <img src=\"http://www.w3.org/Icons/valid-xhtml11\"\n";
 print "         alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" /></a>\n";
+print "  <a href=\"http://jigsaw.w3.org/css-validator/check/referer\">\n";
+print "    <img src=\"http://jigsaw.w3.org/css-validator/images/vcss\"\n";
+print "         alt=\"Valid CSS\" height=\"31\" width=\"88\" /></a>\n";
 
 print "</div>\n";
 print "</body>\n";
