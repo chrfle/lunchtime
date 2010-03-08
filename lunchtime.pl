@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.0";
+$version = "1.1.1";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -277,21 +277,21 @@ sub ideonalfa_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<b>.*?$day.*?<\/b>(.+?)<br><br>/)
+  if ($htmlbody =~ /<h[23]>.*$day.*?<\/h[23]>(.+?)<h[23][> ]/i)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/&#160;/ /g;
     $lunch =~ s/\s+/ /g;
-    $lunch =~ s/<br>/ - /g;
+    $lunch =~ s/<p>/ - /g;
     $lunch =~ s/<.*?>//g;
-
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
     #replace  - as separator between lunch choices, but first remove the first sep
     $lunch =~ s/^-\s+//;
+    # and remove any stray separators (and space) at end
+    $lunch =~ s/[- ]+$//;
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
     $lunch =~ s/::\s+::/::/g;
@@ -309,10 +309,11 @@ sub annaskok_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:* (.+?)<\/font>/is)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:*(.+?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/&#160;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<br \/>/ :: /g; # choice separator
     $lunch =~ s/Vegetariskt:\s*//;
