@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.1";
+$version = "1.1.2";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -130,6 +130,16 @@ $date_monday = POSIX::strftime("%Y-%m-%d", localtime($ntime - (($dayofweek - 1) 
 $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 24 * 60 * 60)));
 
 print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
+# I <3 bacon
+foreach $day (@days_match)
+{
+  if ($menu{$day} =~ /bacon/i)
+  {
+    print "<img src=\"static/iheartbacon.gif\" alt=\"I heart bacon\" />\n";
+    last;
+  }
+}
+
 foreach $day (@days_match)
 {
   print "<h2><a id=\"$days_ref{$day}\">$days_print{$day}</a></h2>\n";
