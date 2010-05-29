@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.3";
+$version = "1.1.4";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -248,7 +248,7 @@ sub hojdpunkten_day
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
-    $lunch =~ s/[: ]+ sallad.*//ig; # and remove Sallad etc. which is always included
+    $lunch =~ s/:[: ]+ sallad.*//ig; # and remove Sallad etc. which is always included
     $lunch =~ s/::\s+::/::/g;
   }
   else
