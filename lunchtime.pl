@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.2";
+$version = "1.1.3";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -226,10 +226,10 @@ sub hojdpunkten_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   # Finding a days choice is tricky, cut out everything between the day we are after and the next
-  # day (or h2). We only look for 'dag' in the next day, so we have to also have in a strong tag.
+  # day (or h2). We only look for 'dag' in the next day, so we have to also have a strong tag.
   # However there may be <br /> before or after the day. Also there may be strongs in the day choice.
   # Usually empty strongs, but we still need to take them into account.
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>&nbsp;]*?\w+dag.*?<\/strong>|<h2>)/)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>&nbsp;]*?\w+dag.*?<\/strong>|<h2>|<\/td>)/)
   {
     $lunch = $1;
     $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
@@ -248,7 +248,7 @@ sub hojdpunkten_day
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
-    $lunch =~ s/[: ]+ Sallad.*//g; # and remove Sallad which is always included
+    $lunch =~ s/[: ]+ sallad.*//ig; # and remove Sallad etc. which is always included
     $lunch =~ s/::\s+::/::/g;
   }
   else
