@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.4";
+$version = "1.1.5";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -15,7 +15,7 @@ $version = "1.1.4";
 ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
 ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
-,'http://www.fazeramica.se/templates/Fazer_RestaurantMenuPage.aspx?id=85572&epslanguage=SV', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -347,15 +347,20 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /menufactstext.*?<p>.*?$day.*?<br \/>(.+?)<\/p>/)
+  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)<strong>|<\/table>/)
   {
     $lunch = $1;
-    $lunch =~ s/<br \/>/<\/li><li>/g;
+    $lunch =~ s/<\/td>/ :: /g;
+    $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/<.*?>//g;
+
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
   }
   else
   {
     $lunch = "&mdash;";
   }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   return "<ul><li>".$lunch."</li></ul>";
 }
 
