@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.1.5";
+$version = "1.2.0";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -16,6 +16,7 @@ $version = "1.1.5";
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
 ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
 ,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -55,62 +56,61 @@ foreach $url (keys %urls)
     # url for sarimner has week info in url which needs to be modified
     $url_req =~ s/YYYY-WW/$yearweek/;
   }
-  if ($req = $http->request($url_req))
+  if (not $req = $http->request($url_req))
   {
-    if ($req eq "200")
+    $req = $!;
+  }
+
+  if ($req eq "200")
+  {
+    $body = $http->body();
+    if ($url =~ /pdf$/)
     {
-      $body = $http->body();
-      if ($url =~ /pdf$/)
-      {
-        $pdffile = 'sarimner.pdf';
-        open(PDF, ">$pdffile");
-        print PDF $body;
-        close PDF;
-        my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
-        unlink $pdffile;
-        #print @textlist;
-        $body = join("<nl>", @textlist);
-      }
-      else
-      {
-        $body =~ s/\n/ /g; # convert all newlines to one space
-      }
-      #print $body;
+      $pdffile = 'sarimner.pdf';
+      open(PDF, ">$pdffile");
+      print PDF $body;
+      close PDF;
+      my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
+      unlink $pdffile;
+      #print @textlist;
+      $body = join("<nl>", @textlist);
     }
     else
     {
-      print "<!-- Request for $url_req failed ($req) -->\n";
+      $body =~ s/\n/ /g; # convert all newlines to one space
+      $body =~ s/\r/ /g; # convert all newlines to one space
     }
-    foreach $day (@days_match)
-    {
-      if ($req eq "200")
-      {
-        # check if we have menu for correct week
-        if ($urls{$url}[1]->($body))
-        {
-          $lunch = $urls{$url}[0]->($body, $day);
-          #print "$lunch\n";
-        }
-        else
-        {
-          open(F, ">>lunchtime_fail.log");
-          print F "-- start ---------- $url -- $day -------------\n";
-          print F $body;
-          print F "-- end -- --------- $url -- $day -------------\n";
-          close F;
-          $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
-        }
-      } 
-      else
-      {
-        $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
-      }
-      $menu{$day} .= "    <tr class=\"$lb\"><th>".$urls{$url}[2]."</th><td>$lunch</td></tr>\n";
-    }
+    #print $body;
   }
   else
   {
-    print "request for url $url failed ($!)...\n";
+    print "<!-- Request for $url_req failed ($req) -->\n";
+  }
+  foreach $day (@days_match)
+  {
+    if ($req eq "200")
+    {
+      # check if we have menu for correct week
+      if ($urls{$url}[1]->($body))
+      {
+        $lunch = $urls{$url}[0]->($body, $day);
+        #print "$lunch\n";
+      }
+      else
+      {
+        open(F, ">>lunchtime_fail.log");
+        print F "-- start ---------- $url -- $day -------------\n";
+        print F $body;
+        print F "-- end -- --------- $url -- $day -------------\n";
+        close F;
+        $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+      }
+    } 
+    else
+    {
+      $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
+    }
+    $menu{$day} .= "    <tr class=\"$lb\"><th>".$urls{$url}[2]."</th><td>$lunch</td></tr>\n";
   }
 }
 
@@ -347,7 +347,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)<strong>|<\/table>/)
+  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)(?:<strong>|<\/table>)/)
   {
     $lunch = $1;
     $lunch =~ s/<\/td>/ :: /g;
@@ -364,10 +364,33 @@ sub scotlandyard_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
+sub italia_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<p><strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*<br \/>|<\/p>)/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/<strong>//g;
+    $lunch =~ s/<\/strong>//g;
+
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
 sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /v\.&\#160;$weeknum/i || #only annas uses short week indicator (but uses &#160; for space
+  return ($body =~ /v\.&\#160;$weeknum/i || # only annas uses short week indicator (but uses &#160; for space)
+          $body =~ /vecka&\#160;$weeknum/i || # ideon alfa uses &#160; for space
           $body =~ /vecka\D*$weeknum/i ||
 	  $body =~ /vecka\D*$weeknum_pad/i);
 }
