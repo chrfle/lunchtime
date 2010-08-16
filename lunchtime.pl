@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.0";
+$version = "1.2.1";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -305,6 +305,8 @@ sub ideonalfa_day
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
     $lunch =~ s/::\s+::/::/g;
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
