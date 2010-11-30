@@ -6,11 +6,11 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.2";
+$version = "1.2.3";
 
 %urls = (
  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
-,'http://www.restauranghojdpunkten.se/Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
+,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
 #,'http://www.cafebryggan.com/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
 ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
 ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
