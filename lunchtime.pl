@@ -6,17 +6,18 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.3";
+$version = "1.2.4";
 
 %urls = (
- 'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
-,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
+  'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+ ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
 #,'http://www.cafebryggan.com/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
-,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
-,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
-,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
-,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
-,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
+ ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
+ ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
+ ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
+ ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
+ ,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+ ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -36,7 +37,7 @@ $ntime = time;
 $weeknum_pad = POSIX::strftime("%V", localtime($ntime));
 $weeknum = $weeknum_pad;
 $weeknum =~ s/^0//; # remove any 0 padding
-$yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum;
+$yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum_pad;
 
 $lb = "dark";
 foreach $url (keys %urls)
@@ -190,6 +191,28 @@ sub sarimner_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub magnus_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ />.*?$day<\/SPAN>(.*?)<\/TR>/)
+  {
+    $lunch = $1;
+
+    $lunch =~ s/<.*?>//g; # remove all formatting
+
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
