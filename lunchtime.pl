@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.4";
+$version = "1.2.5";
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -136,7 +136,7 @@ foreach $day (@days_match)
 {
   if ($menu{$day} =~ /bacon/i)
   {
-    print "<img src=\"static/iheartbacon.gif\" alt=\"I heart bacon\" />\n";
+    print "<div><img src=\"static/iheartbacon.gif\" alt=\"I heart bacon\" /></div>\n";
     last;
   }
 }
