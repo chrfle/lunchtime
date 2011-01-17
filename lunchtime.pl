@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.5";
+$version = "1.2.6";
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -220,7 +220,7 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day(.+?)<\/td>/)
+  if ($htmlbody =~ /<h2>.*?$day.*?<p>(.+?)<\/p>/)
   {
     $lunch = $1;
     $lunch =~ s/&nbsp;/ /g;
@@ -228,9 +228,6 @@ sub finninn_day
 
     $lunch =~ s/<\/p>/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
-
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
