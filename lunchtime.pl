@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.6";
+$version = "1.2.7";
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -78,9 +78,12 @@ foreach $url (keys %urls)
     }
     else
     {
-      $body =~ s/\n/ /g; # convert all newlines to one space
-      $body =~ s/\r/ /g; # convert all newlines to one space
+      $body =~ s/\n/ /g; # replace all newlines to one space
+      $body =~ s/\r/ /g; # replace all newlines to one space
     }
+    $body =~ s/&nbsp;/ /g; # all hard spaces to soft
+    $body =~ s/&\#160;/ /g;
+    $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
     #print $body;
   }
   else
@@ -168,11 +171,9 @@ sub sarimner_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  #print "BODY\n$htmlbody\n";
   if ($htmlbody =~ /<br>.*?$day(.+?)(<br*>\d|<nl>Chefs)/s)
   {
     $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/Cross:\s*//; # choice separator
@@ -223,7 +224,6 @@ sub finninn_day
   if ($htmlbody =~ /<h2>.*?$day.*?<p>(.+?)<\/p>/)
   {
     $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<\/p>/ :: /g; # choice separator
@@ -249,7 +249,7 @@ sub hojdpunkten_day
   # day (or h2). We only look for 'dag' in the next day, so we have to also have a strong tag.
   # However there may be <br /> before or after the day. Also there may be strongs in the day choice.
   # Usually empty strongs, but we still need to take them into account.
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>&nbsp;]*?\w+dag.*?<\/strong>|<h2>|<\/td>)/)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>]*?\w+dag.*?<\/strong>|<h2>|<\/td>)/)
   {
     $lunch = $1;
     $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
@@ -260,8 +260,7 @@ sub hojdpunkten_day
     # but put in a <br /> since sometimes there is a break in the <em>. Any extra :: will be trimmed later.
     $lunch =~ s/<em>.*?<\/em>/<br \/>/g;
     $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/>&nbsp;<\/p>/> :: /g;
-    $lunch =~ s/&nbsp;/ /g;
+    $lunch =~ s/> <\/p>/> :: /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
@@ -286,7 +285,6 @@ sub bryggan_day
   if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.+?)<\/p>/i)
   {
     $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<br \/>/ :: /g; # choice separator
     $lunch =~ s/Vegetariskt:\s*//;
@@ -310,8 +308,6 @@ sub ideonalfa_day
   if ($htmlbody =~ /<h[23]>.*$day.*?<\/h[23]>(.+?)<h[23][> ]/i)
   {
     $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
-    $lunch =~ s/&#160;/ /g;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<p>/ - /g;
     $lunch =~ s/<.*?>//g;
@@ -319,7 +315,7 @@ sub ideonalfa_day
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
     #replace  - as separator between lunch choices, but first remove the first sep
-    $lunch =~ s/^-\s+//;
+    $lunch =~ s/^[- ]+//;
     # and remove any stray separators (and space) at end
     $lunch =~ s/[- ]+$//;
     $lunch =~ s/ - / :: /g;
@@ -341,14 +337,10 @@ sub annaskok_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>:*(.+?)<\/p>/i)
+  if ($htmlbody =~ /<div .*?$day: (.+?)<\//i)
   {
     $lunch = $1;
-    $lunch =~ s/&nbsp;/ /g;
-    $lunch =~ s/&#160;/ /g;
     $lunch =~ s/\s+/ /g;
-    $lunch =~ s/<br \/>/ :: /g; # choice separator
-    $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
@@ -373,7 +365,6 @@ sub scotlandyard_day
   {
     $lunch = $1;
     $lunch =~ s/<\/td>/ :: /g;
-    $lunch =~ s/&nbsp;/ /g;
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
@@ -390,7 +381,11 @@ sub italia_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p><strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*<br \/>|<\/p>)/i)
+  # sometimes italia uses lots of space to force text onto the next line instead of break
+  $htmlbody =~ s/\s{80}/<br \/>/g;
+  # a day's menu is terminated by a double break or a paragraph end.
+  # sometimes a <strong> sneeks in between the breaks
+  if ($htmlbody =~ /<strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*(<strong>)*\s*<br \/>|<\/p>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
@@ -411,8 +406,7 @@ sub italia_day
 sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /v\.&\#160;$weeknum/i || # only annas uses short week indicator (but uses &#160; for space)
-          $body =~ /vecka&\#160;$weeknum/i || # ideon alfa uses &#160; for space
+  return ($body =~ /v\.\D*$weeknum/i || # only annas uses short week indicator
           $body =~ /vecka\D*$weeknum/i ||
 	  $body =~ /vecka\D*$weeknum_pad/i);
 }
