@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.7";
+$version = "1.2.8";
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -221,12 +221,12 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h2>.*?$day.*?<p>(.+?)<\/p>/)
+  if ($htmlbody =~ /<h2>.*?$day.*?(?:<p>|<td .*?>)(.+?)<\/td>/)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
 
-    $lunch =~ s/<\/p>/ :: /g; # choice separator
+    $lunch =~ s/(<\/p>|<br>)/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
@@ -264,10 +264,10 @@ sub hojdpunkten_day
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
+    $lunch =~ s/\(avh.*?\)\.*//g; # remove (avh price.
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
-    $lunch =~ s/:[: ]+ sallad.*//ig; # and remove Sallad etc. which is always included
     $lunch =~ s/::\s+::/::/g;
   }
   else
@@ -393,6 +393,7 @@ sub italia_day
     $lunch =~ s/<\/strong>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
   }
   else
   {
