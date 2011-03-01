@@ -6,7 +6,7 @@ use HTTP::Lite;
 use Encode;
 use POSIX;
 
-$version = "1.2.8";
+$version = "1.3.0";
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -18,6 +18,7 @@ $version = "1.2.8";
  ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
  ,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
+ ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -391,6 +392,32 @@ sub italia_day
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<strong>//g;
     $lunch =~ s/<\/strong>//g;
+
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub ideondelta_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<td.*?$day.*?<\/tr>.*?<\/tr>(.*?<\/tr>.*?<\/tr>.*?)<\/tr>/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/>\d+:-</></g; # remove price
+    $lunch =~ s/<.*?>//g;
+    #convert lunchtags to separators
+    $lunch =~ s/Traditionell:/ :: /g;
+    $lunch =~ s/Medveten:/ :: /g;
+    $lunch =~ s/Vegetarisk:/ :: /g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
