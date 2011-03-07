@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.1';
+$version = '1.3.2';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -315,7 +315,7 @@ sub ideonalfa_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h[23]>.*$day.*?<\/h[23]>(.+?)<h[23][> ]/i)
+  if ($htmlbody =~ /<span style.*$day.*?<\/span>(.+?Veg[ae]tarisk.+?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
@@ -330,6 +330,7 @@ sub ideonalfa_day
     $lunch =~ s/[- ]+$//;
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
+    $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to spell
     $lunch =~ s/::\s+::/::/g;
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
