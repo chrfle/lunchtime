@@ -5,8 +5,12 @@ use warnings;
 use HTTP::Lite;
 use Encode;
 use POSIX;
+use Getopt::Std;
 
-$version = "1.3.0";
+$version = '1.3.1';
+
+# options f  filter urls to only include matching restaurants
+getopts('f:');
 
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -16,7 +20,7 @@ $version = "1.3.0";
  ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
  ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
  ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
- ,'http://www.amica.se/Restauranger/Restauranger/Lund/Restaurang-Scotland-Yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+ ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
         );
@@ -43,6 +47,11 @@ $yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum_pad;
 $lb = "dark";
 foreach $url (keys %urls)
 {
+  if ($opt_f)
+  {
+    #print "Filter option -f '$opt_f' in 
+    next if ($url !~ /$opt_f/);
+  }
   if ($lb eq "lght")
   {
     $lb = "dark";
@@ -265,7 +274,7 @@ sub hojdpunkten_day
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/\(avh.*?\)\.*//g; # remove (avh price.
+    $lunch =~ s/\(avh.*?\)\s*\.*//g; # remove (avh price.
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
