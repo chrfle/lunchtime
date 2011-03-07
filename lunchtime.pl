@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.2';
+$version = '1.3.3';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -396,7 +396,8 @@ sub italia_day
   $htmlbody =~ s/\s{80}/<br \/>/g;
   # a day's menu is terminated by a double break or a paragraph end.
   # sometimes a <strong> sneeks in between the breaks
-  if ($htmlbody =~ /<strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*(<strong>)*\s*<br \/>|<\/p>)/i)
+  # and sometimes even a </strong>
+  if ($htmlbody =~ /<strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*(<strong>)*(<\/strong>)*\s*<br \/>|<\/p>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
