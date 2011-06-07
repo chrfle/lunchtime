@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.5';
+$version = '1.3.6';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -459,7 +459,15 @@ sub thaiway_day
   {
     $lunch = $1;
     $lunch =~ s/<P class=subhead_meny>/ :: /g;
-    $lunch =~ s/<DIV class=text_meny>/: /g;
+    if ($day eq 'ndag')
+    {
+      $lunch =~ s/<DIV class=text_meny>/: /g;
+    }
+    else
+    {
+      $lunch =~ s/<DIV class=text_meny>.*?<\/DIV>//g;
+    }
+
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
