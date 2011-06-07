@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.4';
+$version = '1.3.5';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -23,6 +23,7 @@ getopts('f:');
  ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+ ,'http://www.thaiway.se/meny.asp', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -437,6 +438,29 @@ sub ideondelta_day
     $lunch =~ s/Traditionell:/ :: /g;
     $lunch =~ s/Medveten:/ :: /g;
     $lunch =~ s/Vegetarisk:/ :: /g;
+
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub thaiway_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /Meny start-->(.*)<\/P>.*?<!--Meny end-->/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/<P class=subhead_meny>/ :: /g;
+    $lunch =~ s/<DIV class=text_meny>/: /g;
+    $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
