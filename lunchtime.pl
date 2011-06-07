@@ -7,7 +7,7 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.3';
+$version = '1.3.4';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -209,12 +209,11 @@ sub magnus_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
+  my $veckans = '';
   if ($htmlbody =~ />.*?$day<\/SPAN>(.*?)<\/TR>/)
   {
     $lunch = $1;
-
     $lunch =~ s/<.*?>//g; # remove all formatting
-
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
   }
@@ -222,6 +221,15 @@ sub magnus_day
   {
     $lunch = "&mdash;";
   }
+  if ($htmlbody =~ /Veckans alternativ<\/SPAN>.*?<\/TD>(.*?)<\/TR>/)
+  {
+    $veckans = $1;
+    $veckans =~ s/<.*?>//g; # remove all formatting
+    $veckans =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $veckans =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
+    $veckans = ' :: Veckans: ' . $veckans; # add veckans to daily with separator
+  }
+  $lunch .= $veckans;
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
   $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
