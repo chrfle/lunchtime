@@ -7,7 +7,6 @@ use Encode;
 use POSIX;
 use Getopt::Std;
 
-$version = '1.3.6';
 
 # options f  filter urls to only include matching restaurants
 getopts('f:');
@@ -15,9 +14,8 @@ getopts('f:');
 %urls = (
   'http://www.finninn.com/finninn/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
  ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
-#,'http://www.cafebryggan.com/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
  ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
- ,'http://sarimner.nu/veckomeny/veckomeny%20v%20YYYY-WW%20se%20hilda%20svensk.pdf', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
+ ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/renoverings-meny', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
  ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
  ,'http://www.annaskok.se/Lunchmeny/tabid/130/language/en-US/Default.aspx', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
  ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
@@ -43,7 +41,6 @@ $ntime = time;
 $weeknum_pad = POSIX::strftime("%V", localtime($ntime));
 $weeknum = $weeknum_pad;
 $weeknum =~ s/^0//; # remove any 0 padding
-$yearweek = POSIX::strftime("%Y-", localtime($ntime)).$weeknum_pad;
 
 $lb = "dark";
 foreach $url (keys %urls)
@@ -63,11 +60,6 @@ foreach $url (keys %urls)
   }
   $http = new HTTP::Lite;
   $url_req = $url;
-  if ($url_req =~ /sarimner/)
-  {
-    # url for sarimner has week info in url which needs to be modified
-    $url_req =~ s/YYYY-WW/$yearweek/;
-  }
   if (not $req = $http->request($url_req))
   {
     $req = $!;
@@ -76,22 +68,8 @@ foreach $url (keys %urls)
   if ($req eq "200")
   {
     $body = $http->body();
-    if ($url =~ /pdf$/)
-    {
-      $pdffile = 'sarimner.pdf';
-      open(PDF, ">$pdffile");
-      print PDF $body;
-      close PDF;
-      my @textlist = qx(pdftohtml -noframes -stdout $pdffile);
-      unlink $pdffile;
-      #print @textlist;
-      $body = join("<nl>", @textlist);
-    }
-    else
-    {
-      $body =~ s/\n/ /g; # replace all newlines to one space
-      $body =~ s/\r/ /g; # replace all newlines to one space
-    }
+    $body =~ s/\n/ /g; # replace all newlines to one space
+    $body =~ s/\r/ /g; # replace all newlines to one space
     $body =~ s/&nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
     $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
@@ -166,7 +144,7 @@ foreach $day (@days_match)
 }
 
 print "<div class=\"footer\">\n";
-print "  <p>Generated at $timestamp by lunchtime $version on acatenango</p>\n";
+print "  <p>Generated at $timestamp by cotopaxi</p>\n";
 print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
 print "    <img src=\"http://www.w3.org/Icons/valid-xhtml11\"\n";
 print "         alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" /></a>\n";
@@ -182,21 +160,12 @@ sub sarimner_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<br>.*?$day(.+?)(<br*>\d|<nl>Chefs)/s)
+  if ($htmlbody =~ /<span>.*?$day.*?<\/span>.*?Dagens.*?:(.+?)<\//)
   {
     $lunch = $1;
-    $lunch =~ s/\s+/ /g;
-
-    $lunch =~ s/Cross:\s*//; # choice separator
-    $lunch =~ s/Husman:\s*/ :: /; # choice separator
-    $lunch =~ s/Vegetariska.*?:\s*/ :: /; # choice separator
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
+    #$lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
   }
   else
   {
