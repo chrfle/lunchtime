@@ -160,7 +160,7 @@ sub sarimner_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<span>.*?$day.*?<\/span>.*?Dagens.*?:(.+?)<\//)
+  if ($htmlbody =~ /<p>.*?$day.*?<\/p>.*?Dagens.*?:(.+?)<\//)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g;
