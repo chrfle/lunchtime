@@ -332,7 +332,7 @@ sub annaskok_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<div .*?$day: (.+?)<\//i)
+  if ($htmlbody =~ /<div .*?$day:\s*(.+?)<\//i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
