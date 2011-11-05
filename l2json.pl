@@ -2,6 +2,12 @@
 
 use warnings;
 
+my %day_key = ('mandag'  => 'mon'
+               ,'tisdag'  => 'tue'
+               ,'onsdag'  => 'wed'
+               ,'torsdag' => 'thu'
+               ,'fredag'  => 'fri'
+               );
 my $first_site = 1;
 print "{\n";
 while (<>)
@@ -20,8 +26,9 @@ while (<>)
   elsif (/<h2><a id="(\w+)"/) # new day
   {
     $first_site = 1;
+    my $day = $day_key{$1};
     print ",\n";
-    print "  \"$1\" : [\n";
+    print "  \"$day\" : [\n";
   }
   elsif (/<\/table>/)
   {
