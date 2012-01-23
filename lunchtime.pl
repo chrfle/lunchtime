@@ -21,7 +21,7 @@ getopts('f:');
  ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
- ,'http://www.thaiway.se/meny.asp', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
+ ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -103,7 +103,7 @@ foreach $url (keys %urls)
     {
       $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
     }
-    $menu{$day} .= "    <tr class=\"$lb\"><th>".$urls{$url}[2]."</th><td>$lunch</td></tr>\n";
+    $menu{$day} .= "    <tr class=\"$lb\"><th><a href=\"".$url."\">".$urls{$url}[2]."</a></th><td>$lunch</td></tr>\n";
   }
 }
 
@@ -332,7 +332,7 @@ sub annaskok_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<div .*?$day:\s*(.+?)<\//i)
+  if ($htmlbody =~ /<strong>.*?$day<\/strong>:\s*(.+?)<\//i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
