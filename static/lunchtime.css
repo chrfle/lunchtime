@@ -21,6 +21,21 @@ table.lm tbody {
   font-size: small;
 }
 
+table.lm a:link {
+  color: black;
+  text-decoration: none;
+}
+
+table.lm a:visited {
+  color: black;
+  text-decoration: none;
+}
+
+table.lm a:hover {
+  color: darkred;
+  text-decoration: none;
+}
+
 table.lm th {
   font-weight: normal;
   vertical-align: top;
