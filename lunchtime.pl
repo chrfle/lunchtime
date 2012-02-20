@@ -186,7 +186,7 @@ sub magnus_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   my $veckans = '';
-  if ($htmlbody =~ />.*?$day<\/SPAN>(.*?)<\/TR>/)
+  if ($htmlbody =~ />.*?$day<\/span>(.*?)<\/tr>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g; # remove all formatting
@@ -197,7 +197,7 @@ sub magnus_day
   {
     $lunch = "&mdash;";
   }
-  if ($htmlbody =~ /Veckans alternativ<\/SPAN>.*?<\/TD>(.*?)<\/TR>/)
+  if ($htmlbody =~ /Veckans alternativ<\/span>.*?<\/td>(.*?)<\/tr>/i)
   {
     $veckans = $1;
     $veckans =~ s/<.*?>//g; # remove all formatting
@@ -239,26 +239,15 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  # Finding a days choice is tricky, cut out everything between the day we are after and the next
-  # day (or h2). We only look for 'dag' in the next day, so we have to also have a strong tag.
-  # However there may be <br /> before or after the day. Also there may be strongs in the day choice.
-  # Usually empty strongs, but we still need to take them into account.
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(<strong>[<br \/>]*?\w+dag.*?<\/strong>|<h2>|<\/td>)/)
+  if ($htmlbody =~ /$day.*?(<.+?)<hr \/>/)
   {
     $lunch = $1;
-    $lunch =~ s/<span style="color: #c0c0c0[^:]*?<\/span>//g; # remove english versions, but not any separators which might be in a grey span
-    $lunch =~ s/<span style="color: #888888[^:]*?<\/span>//g; # another shade of grey
-    $lunch =~ s/<span style="color: #999999[^:]*?<\/span>//g; # another shade of grey
-    # removing english above must be done before we convert linebreaks to :: else we trip ourselves up on the :
-    # english text is usually in <em> (but not always, so we still need the grey ones). Remove everything in <em>,
-    # but put in a <br /> since sometimes there is a break in the <em>. Any extra :: will be trimmed later.
-    $lunch =~ s/<em>.*?<\/em>/<br \/>/g;
-    $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/> <\/p>/> :: /g;
+    $lunch =~ s/>husman.*?</></ig;
+    $lunch =~ s/>asiatiska.*?</></ig;
+    $lunch =~ s/<\/p>/ :: /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/\(avh.*?\)\s*\.*//g; # remove (avh price.
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
