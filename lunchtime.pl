@@ -47,7 +47,7 @@ foreach $url (keys %urls)
 {
   if ($opt_f)
   {
-    #print "Filter option -f '$opt_f' in 
+    #print "Filter option -f '$opt_f' in
     next if ($url !~ /$opt_f/);
   }
   if ($lb eq "lght")
@@ -98,7 +98,7 @@ foreach $url (keys %urls)
         close F;
         $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
       }
-    } 
+    }
     else
     {
       $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
@@ -107,15 +107,16 @@ foreach $url (keys %urls)
   }
 }
 
-#print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML Basic 1.0//EN\" \"http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd\">\n";
-print "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n";
-print "<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n";
-print "<head>\n";
-print "  <title>Lunch time</title>\n";
-print "  <link rel=\"stylesheet\" type=\"text/css\" href=\"static/lunchtime.css\" />\n";
-print "  <meta http-equiv=\"content-type\" content=\"text/html;charset=utf-8\" />\n";
-print "</head>\n";
-print "<body>\n";
+#print "<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.0//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic10.dtd">\n";
+print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <title>Lunch time</title>
+  <link rel="stylesheet" type="text/css" href="static/lunchtime.css" />
+  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+</head>
+<body>
+};
 $timestamp = POSIX::strftime("%Y-%m-%d %H:%M:%S", localtime($ntime));
 
 $dayofweek = (localtime($ntime))[6];
@@ -143,18 +144,24 @@ foreach $day (@days_match)
   print "</table>\n";
 }
 
-print "<div class=\"footer\">\n";
-print "  <p>Generated at $timestamp by cotopaxi</p>\n";
-print "  <a href=\"http://validator.w3.org/check?uri=referer\">\n";
-print "    <img src=\"http://www.w3.org/Icons/valid-xhtml11\"\n";
-print "         alt=\"Valid XHTML 1.1\" height=\"31\" width=\"88\" /></a>\n";
-print "  <a href=\"http://jigsaw.w3.org/css-validator/check/referer\">\n";
-print "    <img src=\"http://jigsaw.w3.org/css-validator/images/vcss\"\n";
-print "         alt=\"Valid CSS\" height=\"31\" width=\"88\" /></a>\n";
-
-print "</div>\n";
-print "</body>\n";
-print "</html>\n";
+print qq{<div class="footer">
+  <p>Generated at $timestamp by cotopaxi</p>
+  <a href="http://validator.w3.org/check?uri=referer">
+    <img src="http://www.w3.org/Icons/valid-xhtml11" alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  <a href="http://jigsaw.w3.org/css-validator/check/referer">
+    <img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS" height="31" width="88" /></a>
+</div>
+<script type="text/javascript">
+  var daymap = ["sondag","mandag","tisdag","onsdag","torsdag","fredag","lordag"];
+  var d = new Date();
+  var today = d.getDay();
+  if (today > 1 && today <= 5) {
+    window.location.hash = '#' + daymap[today];
+  }
+</script>
+</body>
+</html>
+};
 
 sub sarimner_day
 {
