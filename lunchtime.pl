@@ -22,6 +22,7 @@ getopts('f:');
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
+ ,'http://www.lagk.se/veckans-meny.html', [\&lagk_day, \&weeknumtest, "LAGK"]
         );
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
@@ -177,6 +178,7 @@ sub sarimner_day
     $lunch =~ s/>Vegetarisk.*?</> :: </;
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -230,6 +232,7 @@ sub finninn_day
     $lunch =~ s/(<\/p>|<br>)/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -280,6 +283,7 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -311,7 +315,7 @@ sub ideonalfa_day
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
     $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to spell
-    $lunch =~ s/::\s+::/::/g;
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -337,6 +341,7 @@ sub annaskok_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -358,6 +363,7 @@ sub scotlandyard_day
     $lunch =~ s/<\/td>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
   }
   else
@@ -384,6 +390,7 @@ sub italia_day
     $lunch =~ s/<strong>//g;
     $lunch =~ s/<\/strong>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -410,6 +417,7 @@ sub ideondelta_day
     $lunch =~ s/Medveten:/ :: /g;
     $lunch =~ s/Vegetarisk:/ :: /g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -441,6 +449,7 @@ sub thaiway_day
 
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
   }
@@ -453,10 +462,33 @@ sub thaiway_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
+sub lagk_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ />.*?$day:(.*?)(?:<span|<br \/>-------)/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/<.*?>//g;
+
+    $lunch =~ s/::\s+::/::/g; # remove double separators
+    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
 sub weeknumtest
 {
   my ($body) = @_;
   return ($body =~ /v\.\D*$weeknum/i || # only annas uses short week indicator
+          $body =~ /ecka\D*$weeknum/ || # lagk has messed up html with separate <strong> tag on V
           $body =~ /vecka\D*$weeknum/i ||
 	  $body =~ /vecka\D*$weeknum_pad/i);
 }
