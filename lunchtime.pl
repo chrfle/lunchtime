@@ -157,7 +157,7 @@ print qq{<div class="footer">
   var d = new Date();
   var today = d.getDay();
   if (today > 1 && today <= 5) {
-    window.location.hash = '#' + daymap[today];
+    document.getElementById(daymap[today]).scrollIntoView();
   }
 </script>
 </body>
