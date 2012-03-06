@@ -112,9 +112,22 @@ foreach $url (keys %urls)
 print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-  <title>Lunch time</title>
-  <link rel="stylesheet" type="text/css" href="static/lunchtime.css" />
-  <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<title>Lunch time</title>
+<link rel="stylesheet" type="text/css" href="static/lunchtime.css" />
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<script type="text/javascript">
+<!--  
+  function ld() {
+    var daymap = ["sondag","mandag","tisdag","onsdag","torsdag","fredag","lordag"];
+    var d = new Date();
+    var today = d.getDay();
+    if (today > 1 && today <= 5) {
+      document.getElementById(daymap[today]).scrollIntoView();
+    }
+  }
+  window.onload = ld;
+// -->  
+</script>
 </head>
 <body>
 };
@@ -124,7 +137,7 @@ $dayofweek = (localtime($ntime))[6];
 $date_monday = POSIX::strftime("%Y-%m-%d", localtime($ntime - (($dayofweek - 1) * 24 * 60 * 60)));
 $date_friday = POSIX::strftime("%m-%d", localtime($ntime + ((5 - $dayofweek) * 24 * 60 * 60)));
 
-print "<h1>Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
+print "<h1 onclick=\"ld()\">Meny vecka $weeknum ($date_monday &mdash; $date_friday)</h1>\n";
 # I <3 bacon
 foreach $day (@days_match)
 {
@@ -152,14 +165,6 @@ print qq{<div class="footer">
   <a href="http://jigsaw.w3.org/css-validator/check/referer">
     <img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS" height="31" width="88" /></a>
 </div>
-<script type="text/javascript">
-  var daymap = ["sondag","mandag","tisdag","onsdag","torsdag","fredag","lordag"];
-  var d = new Date();
-  var today = d.getDay();
-  if (today > 1 && today <= 5) {
-    document.getElementById(daymap[today]).scrollIntoView();
-  }
-</script>
 </body>
 </html>
 };
@@ -412,6 +417,8 @@ sub ideondelta_day
     $lunch = $1;
     $lunch =~ s/>\d+:-</></g; # remove price
     $lunch =~ s/<.*?>//g;
+    $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
+    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
     #convert lunchtags to separators
     $lunch =~ s/Traditionell:/ :: /g;
     $lunch =~ s/Medveten:/ :: /g;
