@@ -183,9 +183,9 @@ sub sarimner_day
     $lunch =~ s/>Vegetarisk.*?</> :: </;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -205,7 +205,7 @@ sub magnus_day
     $lunch = $1;
     $lunch =~ s/<.*?>//g; # remove all formatting
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
-    $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -237,9 +237,9 @@ sub finninn_day
     $lunch =~ s/(<\/p>|<br>)/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -260,13 +260,13 @@ sub hojdpunkten_day
     $lunch =~ s/>husman.*?</></ig;
     $lunch =~ s/>asiatiska.*?</></ig;
     $lunch =~ s/<\/p>/ :: /g;
+    $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/\s+/ /g;
 
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s*::\s+::\s*/ :: /g; # remove double sep
-    $lunch =~ s/::\s+::/::/g;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -288,9 +288,9 @@ sub bryggan_day
     $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -319,10 +319,11 @@ sub ideonalfa_day
     $lunch =~ s/[- ]+$//;
     $lunch =~ s/ - / :: /g;
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
-    $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to spell
-    $lunch =~ s/::\s+::/::/g; # remove double separators
+    $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to 
+
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -346,9 +347,9 @@ sub annaskok_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -368,8 +369,9 @@ sub scotlandyard_day
     $lunch =~ s/<\/td>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
+    $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -395,9 +397,9 @@ sub italia_day
     $lunch =~ s/<strong>//g;
     $lunch =~ s/<\/strong>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -424,9 +426,9 @@ sub ideondelta_day
     $lunch =~ s/Medveten:/ :: /g;
     $lunch =~ s/Vegetarisk:/ :: /g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -456,9 +458,9 @@ sub thaiway_day
 
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
@@ -479,9 +481,9 @@ sub lagk_day
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/::\s+::/::/g; # remove double separators
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
   }
   else
   {
