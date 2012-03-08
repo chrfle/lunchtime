@@ -118,6 +118,9 @@ print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR
 <script type="text/javascript">
 <!--  
   function ld() {
+    if (window.location.hash != '') {
+      return;
+    }
     var daymap = ["sondag","mandag","tisdag","onsdag","torsdag","fredag","lordag"];
     var d = new Date();
     var today = d.getDay();
