@@ -478,7 +478,7 @@ sub lagk_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ />.*?$day:(.*?)(?:<span|<br \/>-------)/i)
+  if ($htmlbody =~ />.*?$day:(.*?)(?:<strong|<span|<br \/>-------)/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
