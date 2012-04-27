@@ -4,5 +4,5 @@ dep_path=/home/pacs/bin
 www_path=/var/www
 echo "Deploying to path ${dep_path} and ${www_path}"
 echo `cp -u -v ./lunchtime.pl ${dep_path}/lunchtime.pl`
-echo `cp -u -v ./static/lunchtime.css ${www_path}/static/lunchtime.css`
+echo `cp -u -v ./static/lt.css ${www_path}/static/lt.css`
 echo "Deployment done"
