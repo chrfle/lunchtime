@@ -182,8 +182,8 @@ sub sarimner_day
     $lunch = $1;
     # remove any single colons after tag
     $lunch =~ s/>: />/g;
-    $lunch =~ s/>Dagens.*?</> :: </g;
-    $lunch =~ s/>Vegetarisk.*?</> :: </;
+    $lunch =~ s/>Dagens.*?:/> :: /g;
+    $lunch =~ s/>Vegetarisk.*?:/> :: /;
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
