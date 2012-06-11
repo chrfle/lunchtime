@@ -59,30 +59,56 @@ foreach $url (keys %urls)
   {
     $lb= "lght";
   }
-  $http = new HTTP::Lite;
   $url_req = $url;
-  if (not $req = $http->request($url_req))
+  do
   {
-    $req = $!;
-  }
+    $http = new HTTP::Lite;
+    if (not $req = $http->request($url_req))
+    {
+      $req = $!;
+    }
 
-  if ($req eq "200")
-  {
-    $body = $http->body();
-    $body =~ s/\n/ /g; # replace all newlines to one space
-    $body =~ s/\r/ /g; # replace all newlines to one space
-    $body =~ s/&nbsp;/ /g; # all hard spaces to soft
-    $body =~ s/&\#160;/ /g;
-    $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
-    #print $body;
+    if ($req eq '200')
+    {
+      $body = $http->body();
+      $body =~ s/\n/ /g; # replace all newlines to one space
+      $body =~ s/\r/ /g; # replace all newlines to one space
+      $body =~ s/&nbsp;/ /g; # all hard spaces to soft
+      $body =~ s/&\#160;/ /g;
+      $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
+      #print $body;
+    }
+    elsif ($req eq '302')
+    {
+      ($url_base) = $url =~ /(http:\/\/.*?)\//;
+      @headers = $http->headers_array();
+      foreach (@headers)
+      {
+        if (/Location: (.*)/)
+        {
+          $loc = $1;
+          if ($loc =~ /^\//)
+          {
+            $url_req = $url_base . $loc;
+          }
+          else
+          {
+            $url_req = $1;
+          }
+          next;
+        }
+      }
+    }
+    else
+    {
+      print "<!-- Request for $url_req failed ($req) -->\n";
+    }
   }
-  else
-  {
-    print "<!-- Request for $url_req failed ($req) -->\n";
-  }
+  while ($req eq '302');
+
   foreach $day (@days_match)
   {
-    if ($req eq "200")
+    if ($req eq '200')
     {
       # check if we have menu for correct week
       if ($urls{$url}[1]->($body))
