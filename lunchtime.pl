@@ -283,11 +283,9 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /$day.*?(<.+?)<hr \/>/)
+  if ($htmlbody =~ /$day\s*?<\/span>(.+?)<span style="color: #0000ff/)
   {
     $lunch = $1;
-    $lunch =~ s/>husman.*?</></ig;
-    $lunch =~ s/>asiatiska.*?</></ig;
     $lunch =~ s/<\/p>/ :: /g;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/\s+/ /g;
@@ -296,6 +294,8 @@ sub hojdpunkten_day
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
     $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    $lunch =~ s/ :: \d+\. / :: /g; # remove lunch alternative number
+    $lunch =~ s/^\d+\. //;         # remove lunch alternative number first
   }
   else
   {
