@@ -229,7 +229,7 @@ sub magnus_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   my $veckans = '';
-  if ($htmlbody =~ />.*?$day<\/(?:span>|strong>)(.*?)<\/tr>/i)
+  if ($htmlbody =~ />.*?$day\s*<\/(?:span>|strong>)(.*?)<\/tr>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g; # remove all formatting
@@ -240,7 +240,7 @@ sub magnus_day
   {
     $lunch = "&mdash;";
   }
-  if ($htmlbody =~ /Veckans alternativ<\/span>.*?<\/td>(.*?)<\/tr>/i)
+  if ($htmlbody =~ /Veckans alternativ.*?<\/span>.*?<\/td>(.*?)<\/tr>/i)
   {
     $veckans = $1;
     $veckans =~ s/<.*?>//g; # remove all formatting
