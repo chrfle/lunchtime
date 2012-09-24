@@ -141,6 +141,7 @@ print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR
 <title>Lunch time</title>
 <link rel="stylesheet" type="text/css" href="static/lt.css" />
 <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link href="/food/favicon.png" rel="icon" type="image/x-icon" />
 <script type="text/javascript">
 <!--  
   function ld() {
