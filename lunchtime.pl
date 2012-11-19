@@ -2,7 +2,7 @@
 
 use warnings;
 
-use HTTP::Lite;
+use WWW::Curl::Easy;
 use Encode;
 use POSIX;
 use Getopt::Std;
@@ -60,51 +60,25 @@ foreach $url (keys %urls)
     $lb= "lght";
   }
   $url_req = $url;
-  do
+  $body = '';
+  $http = new WWW::Curl::Easy;
+  $http->setopt(CURLOPT_HEADER, 1);
+  $http->setopt(CURLOPT_URL, $url_req);
+  $http->setopt(CURLOPT_WRITEDATA, \$body);
+  if (not $req = $http->perform())
   {
-    $http = new HTTP::Lite;
-    if (not $req = $http->request($url_req))
-    {
-      $req = $!;
-    }
-
-    if ($req eq '200')
-    {
-      $body = $http->body();
-      $body =~ s/\n/ /g; # replace all newlines to one space
-      $body =~ s/\r/ /g; # replace all newlines to one space
-      $body =~ s/&nbsp;/ /g; # all hard spaces to soft
-      $body =~ s/&\#160;/ /g;
-      $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
-      #print $body;
-    }
-    elsif ($req eq '302')
-    {
-      ($url_base) = $url =~ /(http:\/\/.*?)\//;
-      @headers = $http->headers_array();
-      foreach (@headers)
-      {
-        if (/Location: (.*)/)
-        {
-          $loc = $1;
-          if ($loc =~ /^\//)
-          {
-            $url_req = $url_base . $loc;
-          }
-          else
-          {
-            $url_req = $1;
-          }
-          next;
-        }
-      }
-    }
-    else
-    {
-      print "<!-- Request for $url_req failed ($req) -->\n";
-    }
+    $req = $http->getinfo(CURLINFO_HTTP_CODE);
   }
-  while ($req eq '302');
+
+  if ($req eq '200')
+  {
+    $body =~ s/\n/ /g; # replace all newlines to one space
+    $body =~ s/\r/ /g; # replace all newlines to one space
+    $body =~ s/&nbsp;/ /g; # all hard spaces to soft
+    $body =~ s/&\#160;/ /g;
+    $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
+    #print $body;
+  }
 
   foreach $day (@days_match)
   {
@@ -115,15 +89,6 @@ foreach $url (keys %urls)
       {
         $lunch = $urls{$url}[0]->($body, $day);
         #print "$lunch\n";
-      }
-      else
-      {
-        open(F, ">>lunchtime_fail.log");
-        print F "-- start ---------- $url -- $day -------------\n";
-        print F $body;
-        print F "-- end -- --------- $url -- $day -------------\n";
-        close F;
-        $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
       }
     }
     else
