@@ -48,7 +48,6 @@ foreach $url (keys %urls)
 {
   if ($opt_f)
   {
-    #print "Filter option -f '$opt_f' in
     next if ($url !~ /$opt_f/);
   }
   if ($lb eq "lght")
@@ -77,7 +76,6 @@ foreach $url (keys %urls)
     $body =~ s/&nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
     $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
-    #print $body;
   }
 
   foreach $day (@days_match)
@@ -88,7 +86,10 @@ foreach $url (keys %urls)
       if ($urls{$url}[1]->($body))
       {
         $lunch = $urls{$url}[0]->($body, $day);
-        #print "$lunch\n";
+      }
+      else
+      {
+        $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
       }
     }
     else
