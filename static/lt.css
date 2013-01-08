@@ -7,9 +7,9 @@ img {
 }
 
 h2 {
-  margin-top: 1.5em;
-  margin-bottom: 0.2em;
-  padding-left: 0.5em;
+  margin-top: 28px; /*1.5em*/
+  margin-bottom: 3px; /*0.2em*/
+  padding-left: 12px; /*0.5em*/
 }
 
 table.lm {
@@ -40,22 +40,22 @@ table.lm th {
   font-weight: normal;
   vertical-align: top;
   text-align: left;
-  padding-left: 0.5em;
-  padding-top: 0.2em;
+  padding-left: 6px; /*0.5em*/
+  padding-top: 3px; /*0.2em*/
   border-bottom: 1px solid #AAA;
 }
 
 table.lm td {
   vertical-align: top;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
-  padding-right: 1em;
+  padding-top: 3px; /*0.2em*/
+  padding-bottom: 3px; /*0.2em*/
+  padding-right: 12px; /*1em*/
   border-bottom: 1px solid #AAA;
 }
 
 table.lm ul {
   margin: 0;
-  padding-left: 2.5em;
+  padding-left: 30px; /*2.5em*/
 }
 
 table.lm tr.lght {
@@ -67,7 +67,7 @@ table.lm tr.dark {
 }
 
 div.footer {
-  margin-top: 3em;
+  margin-top: 36px; /*3em*/
   border-top: 1px solid #AAA;
   font-size: x-small;
   color: #AAA;
