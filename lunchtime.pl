@@ -250,7 +250,7 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /$day\s*?<\/span>(.+?)<span style="color: #0000ff/)
+  if ($htmlbody =~ /$day\s*?<\/span>(.+?)(?:<span style="color: #|<\/td>)/)
   {
     $lunch = $1;
     $lunch =~ s/<\/p>/ :: /g;
