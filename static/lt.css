@@ -37,7 +37,7 @@ table.lm a:hover {
 }
 
 table.lm th {
-  font-weight: normal;
+  /*font-weight: normal;*/
   vertical-align: top;
   text-align: left;
   padding-left: 6px; /*0.5em*/
@@ -69,6 +69,6 @@ table.lm tr.dark {
 div.footer {
   margin-top: 36px; /*3em*/
   border-top: 1px solid #AAA;
-  font-size: x-small;
+  font-size: small;
   color: #AAA;
 }
