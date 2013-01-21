@@ -22,8 +22,11 @@ getopts('f:');
  ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
- ,'http://www.lagk.se/veckans-meny.html', [\&lagk_day, \&weeknumtest, "LAGK"]
+ #,'http://www.catera.se/viking/servlet/VSP?id=content&cssid=&page=psubitem.vsp&$dialog.ID=LAGK&$dialog.IDITEM=S000000156', [\&lagk_day, \&weeknumtest, "LAGK"]
         );
+sub urlsort {
+  return $urls{$a}[2] cmp $urls{$b}[2];
+}
 
 @days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
 %days_print = ("ndag", "Måndag"
@@ -44,7 +47,7 @@ $weeknum = $weeknum_pad;
 $weeknum =~ s/^0//; # remove any 0 padding
 
 $lb = "dark";
-foreach $url (keys %urls)
+foreach $url (sort urlsort keys %urls)
 {
   if ($opt_f)
   {
