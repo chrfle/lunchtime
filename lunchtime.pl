@@ -19,7 +19,7 @@ getopts('f:');
  ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
  ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
  ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
- ,'http://www.italia-ilristorante.com/lunch_lund.php', [\&italia_day, \&weeknumtest, "Italia"]
+ ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
  #,'http://www.catera.se/viking/servlet/VSP?id=content&cssid=&page=psubitem.vsp&$dialog.ID=LAGK&$dialog.IDITEM=S000000156', [\&lagk_day, \&weeknumtest, "LAGK"]
@@ -385,17 +385,14 @@ sub italia_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  # sometimes italia uses lots of space to force text onto the next line instead of break
-  $htmlbody =~ s/\s{80}/<br \/>/g;
-  # a day's menu is terminated by a double break or a paragraph end.
-  # sometimes a <strong> sneeks in between the breaks
-  # and sometimes even a </strong>
-  if ($htmlbody =~ /<strong>.*?$day.*?<br \/>(.+?)(?:<br \/>\s*(<strong>)*(<\/strong>)*\s*<br \/>|<\/p>)/i)
+  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.+?)(?:<h3>|<\/tr>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/<strong>//g;
-    $lunch =~ s/<\/strong>//g;
+    #$lunch =~ s/<div>/ :: /g;
+    #$lunch =~ s/<strong>//g;
+    #$lunch =~ s/<\/strong>//g;
+    $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
     $lunch =~ s/^[:\s]+//; # and beginning
