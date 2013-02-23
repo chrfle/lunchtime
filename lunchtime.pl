@@ -363,9 +363,10 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)(?:<strong>|<\/table>)/)
+  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)<td>\s+<\/td>\s*<td>\s+<\/td>/)
   {
     $lunch = $1;
+    $lunch =~ s/>\d+ kr<\/td>/>/g; # remove pricing
     $lunch =~ s/<\/td>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
