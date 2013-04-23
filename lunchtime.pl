@@ -22,24 +22,31 @@ getopts('f:');
  ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
- #,'http://www.catera.se/viking/servlet/VSP?id=content&cssid=&page=psubitem.vsp&$dialog.ID=LAGK&$dialog.IDITEM=S000000156', [\&lagk_day, \&weeknumtest, "LAGK"]
+ ,'http://bryggancafe.se/veckomeny.html', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
+#,'http://www.catera.se/viking/servlet/VSP?id=content&cssid=&page=psubitem.vsp&$dialog.ID=LAGK&$dialog.IDITEM=S000000156', [\&lagk_day, \&weeknumtest, "LAGK"]
         );
 sub urlsort {
   return $urls{$a}[2] cmp $urls{$b}[2];
 }
 
-@days_match = ("ndag", "Tisdag", "Onsdag", "Torsdag", "Fredag");
-%days_print = ("ndag", "Måndag"
-              ,"Tisdag", "Tisdag"
-              ,"Onsdag", "Onsdag"
-              ,"Torsdag", "Torsdag"
-              ,"Fredag", "Fredag");
+@days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
+%days_match_short = ('ndag', 'Mån'
+                    ,'Tisdag', 'Tis'
+                    ,'Onsdag', 'Ons'
+                    ,'Torsdag', 'Tor'
+                    ,'Fredag', 'Fre');
 
-%days_ref = ("ndag", "mandag"
-            ,"Tisdag", "tisdag"
-            ,"Onsdag", "onsdag"
-            ,"Torsdag", "torsdag"
-            ,"Fredag", "fredag");
+%days_print = ('ndag', 'Måndag'
+              ,'Tisdag', 'Tisdag'
+              ,'Onsdag', 'Onsdag'
+              ,'Torsdag', 'Torsdag'
+              ,'Fredag', 'Fredag');
+
+%days_ref = ('ndag', 'mandag'
+            ,'Tisdag', 'tisdag'
+            ,'Onsdag', 'onsdag'
+            ,'Torsdag', 'torsdag'
+            ,'Fredag', 'fredag');
 
 $ntime = time;
 $weeknum_pad = POSIX::strftime("%V", localtime($ntime));
@@ -279,13 +286,12 @@ sub hojdpunkten_day
 sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
+  my $day_short = $days_match_short{$day};
   my $lunch = '';
-  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.+?)<\/p>/i)
+  if ($htmlbody =~ /<strong>$day_short:\s*<\/strong>(.+?)(?:<\/p>|<br \/>)/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
-    $lunch =~ s/<br \/>/ :: /g; # choice separator
-    $lunch =~ s/Vegetariskt:\s*//;
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
