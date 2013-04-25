@@ -23,7 +23,7 @@ getopts('f:');
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
  ,'http://bryggancafe.se/veckomeny.html', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
-#,'http://www.catera.se/viking/servlet/VSP?id=content&cssid=&page=psubitem.vsp&$dialog.ID=LAGK&$dialog.IDITEM=S000000156', [\&lagk_day, \&weeknumtest, "LAGK"]
+ ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
         );
 sub urlsort {
   return $urls{$a}[2] cmp $urls{$b}[2];
@@ -190,9 +190,11 @@ sub sarimner_day
     $lunch =~ s/>Vegetarisk.*?:/> :: /;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -244,9 +246,11 @@ sub finninn_day
     $lunch =~ s/(<\/p>|<br>)/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -267,11 +271,14 @@ sub hojdpunkten_day
     $lunch =~ s/<\/p>/ :: /g;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/\s+/ /g;
-
     $lunch =~ s/<.*?>//g;
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+
     $lunch =~ s/ :: \d+\. / :: /g; # remove lunch alternative number
     $lunch =~ s/^\d+\. //;         # remove lunch alternative number first
   }
@@ -294,9 +301,11 @@ sub bryggan_day
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -327,9 +336,11 @@ sub ideonalfa_day
     $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
     $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to 
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -353,9 +364,11 @@ sub annaskok_day
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -375,9 +388,11 @@ sub scotlandyard_day
     $lunch =~ s/<\/td>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -395,14 +410,13 @@ sub italia_day
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
-    #$lunch =~ s/<div>/ :: /g;
-    #$lunch =~ s/<strong>//g;
-    #$lunch =~ s/<\/strong>//g;
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -429,9 +443,11 @@ sub ideondelta_day
     $lunch =~ s/Medveten:/ :: /g;
     $lunch =~ s/Vegetarisk:/ :: /g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -461,9 +477,11 @@ sub thaiway_day
 
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -474,19 +492,26 @@ sub thaiway_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
-sub lagk_day
+sub ideonedison_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ />.*?$day:(.*?)(?:<strong|<span|<br \/>-------)/i)
+  if ($htmlbody =~ /<br \/>.*?$day\s*<br \/>(.*?)<br \/>\s*<br \/>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
+    # remove daily tags
+    $lunch =~ s/Local://g;
+    $lunch =~ s/World Wide://g;
+    $lunch =~ s/Green://g;
+
     $lunch =~ s/<.*?>//g;
 
-    $lunch =~ s/[:\s]+$//; # remove any extra choice separators (and space) at the end
-    $lunch =~ s/^[:\s]+//; # and beginning
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g; # remove double sep
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
@@ -499,8 +524,7 @@ sub lagk_day
 sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /v\.\D*$weeknum/i || # only annas uses short week indicator
-          $body =~ /ecka\D*$weeknum/ || # lagk has messed up html with separate <strong> tag on V
+  return ($body =~ /v\D*$weeknum/i || # only annas uses short week indicator
           $body =~ /vecka\D*$weeknum/i ||
 	  $body =~ /vecka\D*$weeknum_pad/i);
 }
