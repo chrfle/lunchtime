@@ -431,7 +431,7 @@ sub ideondelta_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<td.*?$day.*?<\/tr>.*?<\/tr>(.*?<\/tr>.*?<\/tr>.*?)<\/tr>/i)
+  if ($htmlbody =~ />.*?$day.*?<\/li>(.*?<\/table>.*?<\/table>.*?<\/table>)/i)
   {
     $lunch = $1;
     $lunch =~ s/>\d+:-</></g; # remove price
@@ -454,7 +454,6 @@ sub ideondelta_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
