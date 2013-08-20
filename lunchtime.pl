@@ -494,13 +494,14 @@ sub ideonedison_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day\s*<\/strong>(.*?)<br \/>\s*<br \/>/i)
+  if ($htmlbody =~ /<br \/>.*?$day\s*<br \/>(.*?)<br \/>\s*<br \/>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     # remove daily tags
     $lunch =~ s/Local://g;
     $lunch =~ s/World Wide://g;
+    $lunch =~ s/World://g;
     $lunch =~ s/Green://g;
 
     $lunch =~ s/<.*?>//g;
