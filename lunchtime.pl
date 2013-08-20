@@ -30,11 +30,11 @@ sub urlsort {
 }
 
 @days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
-%days_match_short = ('ndag', 'Mån'
-                    ,'Tisdag', 'Tis'
-                    ,'Onsdag', 'Ons'
-                    ,'Torsdag', 'Tor'
-                    ,'Fredag', 'Fre');
+#%days_match_short = ('ndag', 'Mån'
+#                    ,'Tisdag', 'Tis'
+#                    ,'Onsdag', 'Ons'
+#                    ,'Torsdag', 'Tor'
+#                    ,'Fredag', 'Fre');
 
 %days_print = ('ndag', 'Måndag'
               ,'Tisdag', 'Tisdag'
@@ -293,9 +293,8 @@ sub hojdpunkten_day
 sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
-  my $day_short = $days_match_short{$day};
   my $lunch = '';
-  if ($htmlbody =~ /<strong>$day_short:\s*<\/strong>(.+?)(?:<\/p>|<br \/>)/i)
+  if ($htmlbody =~ /<strong>.*?$day:\s*<\/strong>(.+?)(?:<\/p>|<br \/>)/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
