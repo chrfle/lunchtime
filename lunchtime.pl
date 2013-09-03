@@ -184,8 +184,6 @@ sub sarimner_day
   if ($htmlbody =~ /<p>.*?$day.*?<\/p>(.+?<\/p>.+?<\/p>.+?<\/p>)/)
   {
     $lunch = $1;
-    # remove any single colons after tag
-    $lunch =~ s/>: />/g;
     $lunch =~ s/>Dagens.*?:/> :: /g;
     $lunch =~ s/>Vegetarisk.*?:/> :: /;
     $lunch =~ s/<.*?>//g;
