@@ -18,7 +18,7 @@ getopts('f:');
  ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
  ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
  ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
- ,'http://www.amica.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+ ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
  ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
