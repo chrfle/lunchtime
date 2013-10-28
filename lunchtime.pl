@@ -20,7 +20,7 @@ getopts('f:');
  ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
  ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
- ,'http://delta.gastrogate.com/page/3', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+ ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
  ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
  ,'http://bryggancafe.se/veckomeny.html', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
  ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
@@ -429,7 +429,7 @@ sub ideondelta_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ />.*?$day.*?<\/li>(.*?<\/table>.*?<\/table>.*?<\/table>)/i)
+  if ($htmlbody =~ /class="menu_header">.*?$day.*?<\/td>(.*?)(?:<td\s+colspan="3"\s+class="menu_header"|<\/table>)/i)
   {
     $lunch = $1;
     $lunch =~ s/>\d+:-</></g; # remove price
