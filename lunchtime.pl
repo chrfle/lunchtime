@@ -522,9 +522,9 @@ sub ideonedison_day
 sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /v\D*$weeknum/i || # only annas uses short week indicator
-          $body =~ /vecka\D*$weeknum/i ||
-	  $body =~ /vecka\D*$weeknum_pad/i);
+  return ($body =~ /v\s+$weeknum/i || # only annas uses short week indicator
+          $body =~ /vecka\s+$weeknum/i ||
+	  $body =~ /vecka\s+$weeknum_pad/i);
 }
 
 sub weeknumtest_none
