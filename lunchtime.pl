@@ -9,10 +9,10 @@ use Getopt::Std;
 
 
 # options f  filter urls to only include matching restaurants
-getopts('f:');
+getopts('f:w:');
 
 %urls = (
-  'http://www.finninn.com/dagens.html', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+  'http://www.finninn.com/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
 #,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
  ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
  ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
@@ -49,7 +49,18 @@ sub urlsort {
             ,'Fredag', 'fredag');
 
 $ntime = time;
-$weeknum_pad = POSIX::strftime("%V", localtime($ntime));
+if ($opt_w)
+{
+  $weeknum_pad = $opt_w;
+  if (length($weeknum_pad) < 2)
+  {
+    $weeknum_pad = ('0' x length($weeknum_pad)) . $weeknum_pad;
+  }
+}
+else
+{
+  $weeknum_pad = POSIX::strftime("%V", localtime($ntime));
+}
 $weeknum = $weeknum_pad;
 $weeknum =~ s/^0//; # remove any 0 padding
 
@@ -236,12 +247,12 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h2>.*?$day.*?(?:<p>|<td .*?>)(.+?)<\/td>/)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(?:<\/h3>|<strong>)/)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
 
-    $lunch =~ s/(<\/p>|<br>)/ :: /g; # choice separator
+    $lunch =~ s/( Alt |       )/ :: /g; # choice separator
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
@@ -255,7 +266,7 @@ sub finninn_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
+  #$lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
