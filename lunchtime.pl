@@ -16,7 +16,7 @@ getopts('f:w:');
 #,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
  ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
  ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
- ,'http://www.magnuskitchen.se/', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
+ ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
  ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
  ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
  ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
@@ -219,7 +219,7 @@ sub magnus_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   my $veckans = '';
-  if ($htmlbody =~ />.*?$day.*?<\/(?:span>|strong>)(.*?)<\/tr>/i)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>.*?<\/p>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g; # remove all formatting
@@ -240,7 +240,6 @@ sub magnus_day
   }
   $lunch .= $veckans;
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
