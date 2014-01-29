@@ -12,7 +12,7 @@ use Getopt::Std;
 getopts('f:w:');
 
 %urls = (
-  'http://www.finninn.com/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+  'http://www.finninn.com/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
 #,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
  ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
  ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
@@ -247,12 +247,16 @@ sub finninn_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.+?)(?:<\/h3>|<strong>)/)
+  if ($htmlbody =~ /$day<\/div>.*?<strong>(.+?)<\/li>/)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
 
-    $lunch =~ s/( Alt |       )/ :: /g; # choice separator
+    $lunch =~ s/<br>/ :: /g;
+    # remove daily tags
+    $lunch =~ s/Dagens://g;
+    $lunch =~ s/Vegetarisk://g;
+    $lunch =~ s/Sallad://g;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
