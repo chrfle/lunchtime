@@ -536,10 +536,11 @@ sub ideonedison_day
 sub weeknumtest
 {
   my ($body) = @_;
-  return ($body =~ /vecka\s+$weeknum/i ||
-	  $body =~ /vecka\s+$weeknum_pad/i ||
-          $body =~ /v\s+$weeknum/i ||
-          $body =~ /v\.$weeknum_pad/i);
+  # .? before space allows one garbage character (or . or :)
+  return ($body =~ /vecka.?\s+$weeknum/i ||
+	  $body =~ /vecka.?\s+$weeknum_pad/i ||
+          $body =~ /v.?\s+$weeknum/i ||
+          $body =~ /v.?$weeknum_pad/i);
 }
 
 sub weeknumtest_none
