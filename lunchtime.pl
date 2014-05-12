@@ -12,19 +12,20 @@ use Getopt::Std;
 getopts('f:w:');
 
 %urls = (
-  'http://www.finninn.com/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
-#,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
- ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
- ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
- ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
- ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
- ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
- ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
- ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
- ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
- ,'http://bryggancafe.se/veckomeny.html', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
- ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
-        );
+        'http://www.finninn.com/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+      #,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
+       ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
+       ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
+       ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
+       ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
+       ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+       ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
+       ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+       ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
+       ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
+       ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
+       );
+
 sub urlsort {
   return $urls{$a}[2] cmp $urls{$b}[2];
 }
@@ -307,12 +308,14 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day:\s*(.+?)<\/p>/i)
+  if ($htmlbody =~ /<p>.*?$day:\s*(.+?)(?:\w+dag:\s*<\/em>|<\/div>)/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
     $lunch =~ s/<.*?>//g;
+    $lunch =~ s/\xc2//g; # remove garbage char
 
+    $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
     # remove any extra choice separator and space at either end
     # remove double sep
     $lunch =~ s/[:\s]+$//;
