@@ -22,7 +22,7 @@ getopts('f:w:');
        ,'http://www.italia-ilristorante.com/dagens-lunch/lund', [\&italia_day, \&weeknumtest, "Italia"]
        ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
        ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
-       ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
+       ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest_none, "Cafe&nbsp;Bryggan"]
        ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        );
 
@@ -308,7 +308,7 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day:\s*(.+?)(?:\w+dag:\s*<\/p>|<\/div>)/i)
+  if ($htmlbody =~ /<p>.*?$day:\s*<br \/>(.+?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
