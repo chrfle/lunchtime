@@ -18,7 +18,7 @@ getopts('f:w:');
        ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
-       ,'http://www.fazer.se/scotlandyard', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+       ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
        ,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
        ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
        ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
@@ -98,7 +98,8 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/\r/ /g; # replace all newlines to one space
     $body =~ s/&nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
-    $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
+    $body =~ s/&lt;/</g;
+    $body =~ s/&gt;/>/g;
   }
 
   foreach $day (@days_match)
@@ -397,7 +398,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<td><strong>.*?$day<\/strong><\/td>(.+?)(?:<strong>|<\/table>)/)
+  if ($htmlbody =~ /<strong>.*?$day<\/strong>(.+?)(?:<strong>|<\/p>)/)
   {
     $lunch = $1;
     $lunch =~ s/<\/td>/ :: /g;
