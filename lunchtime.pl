@@ -221,7 +221,7 @@ sub magnus_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   my $veckans = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>.*?<\/p>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<strong.*?>.*?$day.*?<\/strong>.*?<\/p>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g; # remove all formatting
