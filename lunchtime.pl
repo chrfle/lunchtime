@@ -402,7 +402,7 @@ sub scotlandyard_day
   if ($htmlbody =~ /<strong>.*?$day<\/strong>(.+?)(?:<strong>|<\/p>)/)
   {
     $lunch = $1;
-    $lunch =~ s/<\/td>/ :: /g;
+    $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
