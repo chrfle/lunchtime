@@ -512,7 +512,7 @@ sub ideonedison_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<br \/>\s*<b>.*?$day.*?<\/b><br \/>(.*?<br \/>.*?<br \/>.*?<br \/>)/i)
+  if ($htmlbody =~ /<br \/>.*?$day.*?<br \/>(.*?<br \/>.*?<br \/>.*?<br \/>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
