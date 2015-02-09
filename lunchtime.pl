@@ -23,7 +23,7 @@ getopts('f:w:');
        ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
        ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
-       ,'http://www.restaurangedison.se/Bizpart.aspx?tabId=191', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
+       ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        );
 
 sub urlsort {
@@ -512,15 +512,13 @@ sub ideonedison_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<br \/>.*?$day.*?<br \/>(.*?<br \/>.*?<br \/>.*?<br \/>)/i)
+  if ($htmlbody =~ /<h3>.*?$day.*?<\/h3>(.*?)<\/table>/i)
   {
     $lunch = $1;
-    $lunch =~ s/<br \/>/ :: /g;
-    # remove daily tags
-    $lunch =~ s/Local://g;
-    $lunch =~ s/World Wide://g;
-    $lunch =~ s/World://g;
-    $lunch =~ s/Green://g;
+    $lunch =~ s/<\/tr>/ :: /g;
+    # remove types and price
+    $lunch =~ s/<td class="course_type">.*?<\/td>//g;
+    $lunch =~ s/<td class="course_price">.*?<\/td>//g;
 
     $lunch =~ s/<.*?>//g;
 
