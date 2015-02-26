@@ -458,6 +458,7 @@ sub ideondelta_day
     #convert lunchtags to separators
     $lunch =~ s/Traditionell:/ :: /g;
     $lunch =~ s/Medveten:/ :: /g;
+    $lunch =~ s/Modern:/ :: /g;
     $lunch =~ s/Vegetarisk:/ :: /g;
 
     # remove any extra choice separator and space at either end
