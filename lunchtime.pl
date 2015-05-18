@@ -9,7 +9,8 @@ use Getopt::Std;
 
 
 # options f  filter urls to only include matching restaurants
-getopts('f:w:');
+our($opt_d, $opt_f, $opt_w);
+getopts('df:w:');
 
 %urls = (
         'http://www.finninn.com/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
@@ -65,6 +66,7 @@ else
 }
 $weeknum = $weeknum_pad;
 $weeknum =~ s/^0//; # remove any 0 padding
+print STDERR "weeknum: $weeknum, pad $weeknum_pad\n" if $opt_d;
 
 $lb = "dark";
 foreach $url (sort urlsort keys %urls)
@@ -310,7 +312,7 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day:\s*(.+?)<\/p>/i)
+  if ($htmlbody =~ /<p>.*?$day(?:<\/span>|:)\s*(.+?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
