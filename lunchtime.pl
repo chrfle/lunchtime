@@ -101,6 +101,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
     $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
+    $body =~ s/&\#65279;/ /g; # BOM char should be ignored, like soft space
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
   }
