@@ -235,7 +235,7 @@ sub magnus_day
   {
     $lunch = "&mdash;";
   }
-  if ($htmlbody =~ /Veckans alternativ.*?<\/span>.*?<\/td>(.*?)<\/tr>/i)
+  if ($htmlbody =~ /Veckans alternativ.*?<\/strong>.*?<p>(.*?)<\/p>/i)
   {
     $veckans = $1;
     $veckans =~ s/<.*?>//g; # remove all formatting
