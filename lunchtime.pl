@@ -22,9 +22,10 @@ getopts('df:w:');
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
        ,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
        ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
-       ,'http://www.thaiway.se/meny.html', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
+       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
+       ,'http://www.mediconvillage.se/sv/lunch-menu', [\&mediconvillage_day, \&weeknumtest, "Medicon&nbsp;Village"]
        );
 
 sub urlsort {
@@ -525,6 +526,35 @@ sub ideonedison_day
     $lunch =~ s/<td class="course_price">.*?<\/td>//g;
 
     $lunch =~ s/<.*?>//g;
+
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub mediconvillage_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<div class="label-above">.*?$day<\/div>(.*?)<\/p>/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/<.*?>//g;
+    #remove lunchtags
+    $lunch =~ s/Dagens Inspira://g;
+    $lunch =~ s/Vegetariskt://g;
+    $lunch =~ s/Mediterranean://g;
+    $lunch =~ s/Dagens enkla://g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
