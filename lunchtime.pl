@@ -314,7 +314,7 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<u>.*?$day:<\/u>\s*(.+?)<\/p>/i)
+  if ($htmlbody =~ /<div>.*?$day:\s*(.+?)<\/div>/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
