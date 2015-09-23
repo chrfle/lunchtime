@@ -26,6 +26,7 @@ getopts('df:w:');
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        ,'http://www.mediconvillage.se/sv/lunch-menu', [\&mediconvillage_day, \&weeknumtest, "Medicon&nbsp;Village"]
+       ,'http://www.matsalen.nu/', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
        );
 
 sub urlsort {
@@ -555,6 +556,29 @@ sub mediconvillage_day
     $lunch =~ s/Vegetariskt://g;
     $lunch =~ s/Mediterranean://g;
     $lunch =~ s/Dagens enkla://g;
+
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub matsalen_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<p>.*?$day<\/p>\s*<p>(.*?)<\/p>/i)
+  {
+    $lunch = $1;
+    $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
