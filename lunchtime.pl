@@ -13,7 +13,7 @@ our($opt_d, $opt_f, $opt_w);
 getopts('df:w:');
 
 %urls = (
-        'http://www.finninn.com/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
+        'http://www.finninn.se/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
       #,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
        ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
        ,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
