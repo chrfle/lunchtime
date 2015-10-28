@@ -26,7 +26,7 @@ getopts('df:w:');
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        ,'http://www.mediconvillage.se/sv/lunch-menu', [\&mediconvillage_day, \&weeknumtest, "Medicon&nbsp;Village"]
-       ,'http://www.matsalen.nu/', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
+       ,'http://www.matsalen.nu/luncher.php', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
        );
 
 sub urlsort {
@@ -201,7 +201,7 @@ sub sarimner_day
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   # always three alternatives
-  if ($htmlbody =~ /<p>.*?$day.*?<\/p>(.+?<\/p>.+?<\/p>.+?<\/p>)/)
+  if ($htmlbody =~ /<p>.*?$day.*?<\/p>(.+?<\/p>.+?<\/p>.+?<\/p>)/i)
   {
     $lunch = $1;
     $lunch =~ s/>Dagens.*?:/> :: /g;
@@ -575,7 +575,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day<\/p>\s*<p>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<strong>.*?$day<\/strong>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g;
