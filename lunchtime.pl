@@ -21,7 +21,7 @@ getopts('df:w:');
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
        ,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
-       ,'http://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+       ,'https://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
        #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
@@ -315,7 +315,7 @@ sub bryggan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<u>.*?$day:(.+?<\/em>.*?)<\/em>/i)
+  if ($htmlbody =~ /<u>.*?$day:(.+?<\/p>.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/\s+/ /g;
@@ -410,6 +410,7 @@ sub scotlandyard_day
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
+    $lunch =~ s/\\&quot;/&quot;/g;
     # remove any extra choice separator and space at either end
     # remove double sep
     $lunch =~ s/[:\s]+$//;
@@ -575,9 +576,10 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day<\/strong>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<strong>.*?$day;*<\/strong>(.*?)<\/p>/i)
   {
     $lunch = $1;
+    $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
