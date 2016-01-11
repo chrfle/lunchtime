@@ -576,7 +576,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p>.*?$day;*<br \/>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<p.*?>.*?$day;*<br \/>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
@@ -602,6 +602,7 @@ sub weeknumtest
   # .? before space allows one garbage character (or . or :)
   return ($body =~ /vecka.?\s+$weeknum/i ||
 	  $body =~ /vecka.?\s+$weeknum_pad/i ||
+          $body =~ /vecka<\/div>\s*$weeknum/i ||
           $body =~ /v.?\s+$weeknum/i ||
           $body =~ /v.?$weeknum_pad/i);
 }
