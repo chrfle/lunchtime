@@ -434,6 +434,9 @@ sub italia_day
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
+    #remove lunchtags
+    $lunch =~ s/Dagens pasta://g;
+    $lunch =~ s/Dagens rätt://g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
@@ -576,11 +579,14 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p.*?>.*?$day;*<br \/>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<p.*?>.*?$day;*.*?<br \/>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
+    #remove lunchtags
+    $lunch =~ s/Dagens;//g;
+    $lunch =~ s/Veckans alt;//gi;
 
     # remove any extra choice separator and space at either end
     # remove double sep
