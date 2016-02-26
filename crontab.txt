@@ -1,0 +1,7 @@
+# m h  dom mon dow   command
+MAILTO=par.sjoholm+cron@gmail.com
+0 10 * * 1 bin/lunchtime.pl | tee var/lt.html | bin/l2json.pl > var/lt.json
+0 6-22 * * * /usr/bin/getmail > /dev/null
+*/5 * * * * bin/cssemla.sh >> cssemla.txt
+2 * * * * /usr/bin/tail -12 cssemla.txt | grep -v '  200 '
+4 * * * * /usr/bin/ssh skmc "tail -12 cssemla.txt | grep -v '  200 '"
