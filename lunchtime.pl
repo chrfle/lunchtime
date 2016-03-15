@@ -579,7 +579,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p.*?>.*?$day;*.*?<br \/>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<p.*?>.*?$day;*.*?<\/p>(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
