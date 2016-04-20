@@ -101,6 +101,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/\n/ /g; # replace all newlines to one space
     $body =~ s/\r/ /g; # replace all newlines to one space
     $body =~ s/&nbsp;/ /g; # all hard spaces to soft
+    $body =~ s/&amp;nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
     $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
     $body =~ s/&\#65279;/ /g; # BOM char should be ignored, like soft space
@@ -579,7 +580,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p.*?>.*?$day;*.*?<\/p>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<p.*?>.*?$day;*.*?(?:<\/p>|<br \/>)(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
