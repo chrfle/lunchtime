@@ -551,16 +551,17 @@ sub mediconvillage_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<div class="label-above">.*?$day<\/div>(.*?)<\/p>/i)
+  if ($htmlbody =~ /<div class="label-above">.*?$day<\/div>(.*?)<\/div><\/div>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
-    #remove lunchtags
-    $lunch =~ s/Dagens Inspira://g;
-    $lunch =~ s/Vegetariskt://g;
-    $lunch =~ s/Mediterranean://g;
-    $lunch =~ s/Dagens enkla://g;
+    $lunch =~ s/\xc2//g; # remove garbage char
+    #remove lunchtags, change to sep
+    $lunch =~ s/Dagens Inspira:/ :: /g;
+    $lunch =~ s/Vegetariskt:/ :: /g;
+    $lunch =~ s/Mediterranean:/ :: /g;
+    $lunch =~ s/Dagens enkla:/ :: /g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
