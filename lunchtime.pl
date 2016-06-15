@@ -21,7 +21,7 @@ getopts('df:w:');
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
        ,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
-       ,'https://delta.gastrogate.com/page/3/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+       ,'http://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
@@ -86,6 +86,12 @@ foreach $url (sort urlsort keys %urls)
     $lb= "lght";
   }
   $url_req = $url;
+  # special url handling for delta
+  if ($url =~ /delta/)
+  {
+    $url_req .= 'MALunchmeny' . (11090 + $weeknum) . '/';
+    print STDERR "adjusted url: $url_req\n" if $opt_d;
+  }
   $body = '';
   $http = new WWW::Curl::Easy;
   $http->setopt(CURLOPT_HEADER, 1);
@@ -458,18 +464,23 @@ sub ideondelta_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /class="menu_header">.*?$day.*?<\/td>(.*?)(?:<td\s+colspan="3"\s+class="menu_header"|<\/table>)/i)
+  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)<\/table>/i)
   {
     $lunch = $1;
-    $lunch =~ s/>\d+:-</></g; # remove price
+    #convert lunchtags to separators
+    $lunch =~ s/<strong>\s*Traditionell\s*<\/strong>/ :: /g;
+    $lunch =~ s/<strong>\s*Medveten\s*<\/strong>/ :: /g;
+    $lunch =~ s/<strong>\s*Modern\s*<\/strong>/ :: /g;
+    $lunch =~ s/<strong>\s*Vegetarisk\s*<\/strong>/ :: /g;
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/&amp;/&/g; # convert all &amp; to simple &
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
-    #convert lunchtags to separators
-    $lunch =~ s/Traditionell:/ :: /g;
-    $lunch =~ s/Medveten:/ :: /g;
-    $lunch =~ s/Modern:/ :: /g;
-    $lunch =~ s/Vegetarisk:/ :: /g;
+
+    # remove LF,GF and space
+    $lunch =~ s/LF,GF\s+//g;
+    $lunch =~ s/GF\s+//g;
+    $lunch =~ s/LF\s+//g;
+
 
     # remove any extra choice separator and space at either end
     # remove double sep
