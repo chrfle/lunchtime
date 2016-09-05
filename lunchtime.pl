@@ -89,12 +89,14 @@ foreach $url (sort urlsort keys %urls)
   # special url handling for delta
   if ($url =~ /delta/)
   {
-    $url_req .= 'MALunchmeny' . (11090 + $weeknum) . '/';
+    # MALunchmeny111113 => 35
+    $url_req .= 'MALunchmeny' . (111078 + $weeknum) . '/';
     print STDERR "adjusted url: $url_req\n" if $opt_d;
   }
   $body = '';
   $http = new WWW::Curl::Easy;
   $http->setopt(CURLOPT_HEADER, 1);
+  $http->setopt(CURLOPT_FOLLOWLOCATION, 1);
   $http->setopt(CURLOPT_URL, $url_req);
   $http->setopt(CURLOPT_WRITEDATA, \$body);
   if (not $req = $http->perform())
