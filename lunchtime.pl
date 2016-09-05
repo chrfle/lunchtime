@@ -16,7 +16,7 @@ getopts('df:w:');
         'http://www.finninn.se/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
        ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
        ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
-      #,'http://www.yourvismawebsite.com/sarimner-restauranger-ab/restaurang-hilda/lunch-meny/svenska', [\&sarimner_day, \&weeknumtest, "Särimner&nbsp;Hilda"]
+       ,'https://eurest.mashie.eu/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
@@ -205,16 +205,17 @@ print qq{<div class="footer">
 </html>
 };
 
-sub sarimner_day
+sub hilda_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
   # always three alternatives
-  if ($htmlbody =~ /<p>.*?$day.*?<\/p>(.+?<\/p>.+?<\/p>.+?<\/p>)/i)
+  if ($htmlbody =~ /<span class="day">.*?$day.*?<\/span>.*?<section class="day-alternative">(.*?)<\/section>.*?<section class="day-alternative">(.*?)<\/section>.*?<section class="day-alternative">(.*?)<\/section>/i)
   {
-    $lunch = $1;
-    $lunch =~ s/>Dagens.*?:/> :: /g;
-    $lunch =~ s/>Vegetarisk.*?:/> :: /;
+    $lunch = $1.$2.$3;
+    $lunch =~ s/>Gr&#246;nt och Gott/> :: /g;
+    $lunch =~ s/>Gr&#228;nsl&#246;st Gott/> :: /;
+    $lunch =~ s/>Dagens Klassiker/> :: /;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
@@ -624,6 +625,7 @@ sub weeknumtest
   return ($body =~ /vecka.?\s+$weeknum/i ||
 	  $body =~ /vecka.?\s+$weeknum_pad/i ||
           $body =~ /vecka<\/div>\s*$weeknum/i ||
+          $body =~ /<strong menu-week>\s*$weeknum/i ||
           $body =~ /v.?\s+$weeknum/i ||
           $body =~ /v.?$weeknum_pad/i);
 }
