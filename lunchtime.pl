@@ -196,10 +196,10 @@ foreach $day (@days_match)
 
 print qq{<div class="footer">
   <p>Generated at $timestamp by cotopaxi</p>
-  <a href="http://validator.w3.org/check?uri=referer">
-    <img src="http://www.w3.org/Icons/valid-xhtml11" alt="Valid XHTML 1.1" height="31" width="88" /></a>
-  <a href="http://jigsaw.w3.org/css-validator/check/referer">
-    <img src="http://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS" height="31" width="88" /></a>
+  <a href="https://validator.w3.org/check?uri=referer">
+    <img src="https://www.w3.org/Icons/valid-xhtml11" alt="Valid XHTML 1.1" height="31" width="88" /></a>
+  <a href="https://jigsaw.w3.org/css-validator/check/referer">
+    <img src="https://jigsaw.w3.org/css-validator/images/vcss" alt="Valid CSS" height="31" width="88" /></a>
 </div>
 </body>
 </html>
@@ -595,7 +595,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<p.*?>.*?$day;*.*?(?:<\/p>|<br \/>)(.*?)<\/p>/i)
+  if ($htmlbody =~ /<\/span><\/p>.*<p.*?>.*?$day;*(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
