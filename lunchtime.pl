@@ -27,6 +27,7 @@ getopts('df:w:');
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        ,'http://www.mediconvillage.se/sv/lunch-menu', [\&mediconvillage_day, \&weeknumtest, "Medicon&nbsp;Village"]
        ,'http://www.matsalen.nu/luncher.php', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
+       ,'http://brickseatery.se/lunch', [\&bricks_day, \&weeknumtest, "Bricks&nbsp;Eatery"]
        );
 
 sub urlsort {
@@ -603,6 +604,39 @@ sub matsalen_day
     #remove lunchtags
     $lunch =~ s/Dagens;//g;
     $lunch =~ s/Veckans alt;//gi;
+
+    # remove any extra choice separator and space at either end
+    # remove double sep
+    $lunch =~ s/[:\s]+$//;
+    $lunch =~ s/^[:\s]+//;
+    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+  }
+  else
+  {
+    $lunch = "&mdash;";
+  }
+  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  return "<ul><li>".$lunch."</li></ul>";
+}
+
+sub bricks_day
+{
+  my ($htmlbody, $day) = @_;
+  my $lunch = '';
+  if ($htmlbody =~ /<h3>.*?$day<\/h3>*(.*?)<\/table>/i)
+  {
+    $lunch = $1;
+    # remove pricetags
+    $lunch =~ s/<td>[\s\d\:\-]+<\/td><\/tr>/<\/tr>/gi;
+    # remove lunchtags
+    $lunch =~ s/<td>Local/<td>/g;
+    $lunch =~ s/<td>Worldwide/<td>/gi;
+    $lunch =~ s/<td>Green/<td>/gi;
+    $lunch =~ s/<td>Pizza/<td>Pizza: /gi;
+    $lunch =~ s/<tr><td>Café.*?<\/tr>//gi; # remove cafe option altogether
+
+    $lunch =~ s/<\/tr>/ :: /g;
+    $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
