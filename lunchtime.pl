@@ -30,9 +30,28 @@ getopts('df:w:');
        ,'http://brickseatery.se/lunch', [\&bricks_day, \&weeknumtest, "Bricks&nbsp;Eatery"]
        );
 
-sub urlsort {
+sub urlsort
+{
   return $urls{$a}[2] cmp $urls{$b}[2];
 }
+
+sub geturl
+{
+  my ($url) = shift @_;
+  my $req;
+  my $body = '';
+  $http = new WWW::Curl::Easy;
+  $http->setopt(CURLOPT_HEADER, 1);
+  $http->setopt(CURLOPT_FOLLOWLOCATION, 1);
+  $http->setopt(CURLOPT_URL, $url_req);
+  $http->setopt(CURLOPT_WRITEDATA, \$body);
+  if (not $req = $http->perform())
+  {
+    $req = $http->getinfo(CURLINFO_HTTP_CODE);
+  }
+  return ($req, $body);
+}
+
 
 @days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
 
@@ -90,21 +109,18 @@ foreach $url (sort urlsort keys %urls)
   # special url handling for delta
   if ($url =~ /delta/)
   {
-    # MALunchmeny111113 => 35
-    $url_req .= 'MALunchmeny' . (111078 + $weeknum) . '/';
-    print STDERR "adjusted url: $url_req\n" if $opt_d;
-  }
-  $body = '';
-  $http = new WWW::Curl::Easy;
-  $http->setopt(CURLOPT_HEADER, 1);
-  $http->setopt(CURLOPT_FOLLOWLOCATION, 1);
-  $http->setopt(CURLOPT_URL, $url_req);
-  $http->setopt(CURLOPT_WRITEDATA, \$body);
-  if (not $req = $http->perform())
-  {
-    $req = $http->getinfo(CURLINFO_HTTP_CODE);
+    ($req, $body) = geturl($url_req);
+    if ($req eq '200')
+    {
+      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny\s+v\.\s+$weeknum/m)
+      {
+        $url_req .= 'MALunchmeny' . $1 . '/';
+        print STDERR "adjusted url: $url_req\n" if $opt_d;
+      }
+    }
   }
 
+  ($req, $body) = geturl($url_req);
   if ($req eq '200')
   {
     $body =~ s/\n/ /g; # replace all newlines to one space
