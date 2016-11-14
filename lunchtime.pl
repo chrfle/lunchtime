@@ -233,6 +233,7 @@ sub hilda_day
     $lunch =~ s/>Gr&#246;nt och Gott/> :: /g;
     $lunch =~ s/>Gr&#228;nsl&#246;st Gott/> :: /;
     $lunch =~ s/>Dagens Klassiker/> :: /;
+    $lunch =~ s/>Dagens Husman/> :: /;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
@@ -612,7 +613,7 @@ sub matsalen_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<\/span><\/p>.*<p.*?>.*?$day;*(.*?)<\/p>/i)
+  if ($htmlbody =~ /<p.*?>.*?$day;*(.*?)<\/p>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
