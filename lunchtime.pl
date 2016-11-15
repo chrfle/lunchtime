@@ -152,6 +152,8 @@ foreach $url (sort urlsort keys %urls)
     {
       $lunch = "<ul><li><em>Menylänk 'no workie' ($req)</em></li></ul>";
     }
+    # replace & with &amp;
+    $lunch =~ s/& /&amp; /g;
     $menu{$day} .= "    <tr class=\"$lb\"><th><a href=\"".$url."\">".$urls{$url}[2]."</a></th><td>$lunch</td></tr>\n";
   }
 }
