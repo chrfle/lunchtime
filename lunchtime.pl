@@ -93,10 +93,12 @@ print STDERR "weeknum: $weeknum, pad $weeknum_pad\n" if $opt_d;
 $lb = "dark";
 foreach $url (sort urlsort keys %urls)
 {
+  print STDERR "considering url: $url\n" if $opt_d;
   if ($opt_f)
   {
     next if ($url !~ /$opt_f/);
   }
+  print STDERR "handling url: $url\n" if $opt_d;
   if ($lb eq "lght")
   {
     $lb = "dark";
@@ -112,7 +114,7 @@ foreach $url (sort urlsort keys %urls)
     ($req, $body) = geturl($url_req);
     if ($req eq '200')
     {
-      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny\s+v\.\s+$weeknum/m)
+      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny.*?v\.\s+$weeknum/m)
       {
         $url_req .= 'MALunchmeny' . $1 . '/';
         print STDERR "adjusted url: $url_req\n" if $opt_d;
@@ -147,7 +149,7 @@ foreach $url (sort urlsort keys %urls)
       else
       {
         $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
-        print STDERR "BBB $body BBB\n" if $opt_d;
+        print STDERR "NNN $body NNN\n" if $opt_d;
       }
     }
     else
