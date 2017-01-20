@@ -129,6 +129,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&amp;nbsp;/ /g; # all hard spaces to soft
     $body =~ s/&\#160;/ /g;
     $body =~ s/\xa0/ /g; # ascii hex a0 is 160 dec which is also a hard space
+    $body =~ s/\xc2/ /g; # convert to space, seems to maybe be part of unicode either 20c2 or c220.
     $body =~ s/&\#65279;/ /g; # BOM char should be ignored, like soft space
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
@@ -146,6 +147,7 @@ foreach $url (sort urlsort keys %urls)
       else
       {
         $lunch = "<ul><li><em>Ingen meny för vecka $weeknum</em></li></ul>";
+        print STDERR "BBB $body BBB\n" if $opt_d;
       }
     }
     else
@@ -679,7 +681,7 @@ sub weeknumtest
 	  $body =~ /vecka.?\s+$weeknum_pad/i ||
           $body =~ /vecka<\/div>\s*$weeknum/i ||
           $body =~ /<strong menu-week>\s*$weeknum/i ||
-          $body =~ /v.?\s+$weeknum/i ||
+          $body =~ /v.?\s{0,3}$weeknum/i ||
           $body =~ /v.?$weeknum_pad/i);
 }
 
