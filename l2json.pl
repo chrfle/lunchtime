@@ -47,13 +47,17 @@ while (<>)
     {
       $first_site = 0;
     }
-    print "    { \"$site\" : [ ";
+    $site =~ /<a href="(.*?)">(.*?)<\/a>/;
+    print "    {\n";
+    print "      \"name\" : \"$2\",\n";
+    print "      \"link\" : \"$1\",\n";
 
     my @lunch_list = split(/<\/li><li>/, $lunch);
     foreach (@lunch_list) # using default $_ works since this is last in while loop
     {
       s/[\s]{2,}/ /g; # remove multi spaces
       s/&amp;/&/g;
+      s/&#180;/´/g;
       s/&ouml;/ö/g;
       s/&#246;/ö/g;
       s/&Ouml;/Ö/g;
@@ -65,12 +69,13 @@ while (<>)
       s/&aring;/å/g;
       s/&#229;/å/g;
       s/&Aring;/Å/g;
+      s/&#232;/è/g;
       s/&eacute;/é/g;
       s/&#233;/é/g;
     }
-    print join(', ', map { '{"lunch" : "' . $_ . '"}'} @lunch_list);
-
-    print " ] }";
+    @lunch_list = grep { $_ !~ /(no workie|^&mdash;)/ } @lunch_list;
+    print "      \"menu\" : [ " . join(', ', map { '"' . $_ . '"'} @lunch_list) . " ]\n";
+    print "    }";
   }
 }
 print "\n";
