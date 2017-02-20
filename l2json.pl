@@ -69,9 +69,12 @@ while (<>)
       s/&aring;/å/g;
       s/&#229;/å/g;
       s/&Aring;/Å/g;
+      s/&agrave;/à/g;
+      s/&#224;/à/g;
       s/&#232;/è/g;
       s/&eacute;/é/g;
       s/&#233;/é/g;
+      s/"/'/g;
     }
     @lunch_list = grep { $_ !~ /(no workie|^&mdash;)/ } @lunch_list;
     print "      \"menu\" : [ " . join(', ', map { '"' . $_ . '"'} @lunch_list) . " ]\n";
