@@ -70,8 +70,8 @@ while (<>)
       s/&#229;/å/g;
       s/&Aring;/Å/g;
       s/&#197;/Å/g;
-      s/&agrave;/à/g;
-      s/&#224;/à/g;
+      s/&agrave;/a/g;
+      s/&#224;/a/g;
       s/&#232;/è/g;
       s/&eacute;/é/g;
       s/&#233;/é/g;
