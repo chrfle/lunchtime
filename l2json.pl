@@ -75,7 +75,12 @@ while (<>)
       s/&#232;/è/g;
       s/&eacute;/é/g;
       s/&#233;/é/g;
+      # quotes in all forms should be converted to single quote to not mess up json
       s/"/'/g;
+      s/&ldquo;/'/g;
+      s/&rdquo;/'/g;
+      s/&lsquo;/'/g;
+      s/&rsquo;/'/g;
     }
     @lunch_list = grep { $_ !~ /(no workie|^&mdash;)/ } @lunch_list;
     print "      \"menu\" : [ " . join(', ', map { '"' . $_ . '"'} @lunch_list) . " ]\n";
