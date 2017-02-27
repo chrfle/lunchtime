@@ -432,6 +432,7 @@ sub annaskok_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("utf-8", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 

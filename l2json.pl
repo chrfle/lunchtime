@@ -72,6 +72,7 @@ while (<>)
       s/&#197;/Å/g;
       s/&agrave;/a/g;
       s/&#224;/a/g;
+      s/\xef\xbf\xbd/a/g;
       s/&#232;/è/g;
       s/&eacute;/é/g;
       s/&#233;/é/g;
