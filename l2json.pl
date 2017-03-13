@@ -78,6 +78,7 @@ while (<>)
       s/&#233;/é/g;
       # quotes in all forms should be converted to single quote to not mess up json
       s/"/'/g;
+      s/&quot;/'/g;
       s/&ldquo;/'/g;
       s/&rdquo;/'/g;
       s/&lsquo;/'/g;

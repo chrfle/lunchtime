@@ -25,7 +25,7 @@ getopts('df:w:');
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
-       ,'http://www.mediconvillage.se/sv/lunch-menu', [\&mediconvillage_day, \&weeknumtest, "Medicon&nbsp;Village"]
+       ,'http://www.mediconvillage.se/sv/hogt-i-tak', [\&mediconvillage_day, \&weeknumtest_none, "Medicon&nbsp;Village"]
        ,'http://www.matsalen.nu/luncher.php', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
        ,'http://brickseatery.se/lunch', [\&bricks_day, \&weeknumtest, "Bricks&nbsp;Eatery"]
        );
@@ -54,6 +54,11 @@ sub geturl
 
 
 @days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
+%days_match_english = ('ndag', 'Monday',
+                       'Tisdag', 'Tuesday',
+                       'Onsdag', 'Wednesday',
+                       'Torsdag', 'Thursday',
+                       'Fredag', 'Friday');
 
 #%days_match_short = ('ndag', 'Mån'
 #                    ,'Tisdag', 'Tis'
@@ -296,10 +301,10 @@ sub finninn_day
 
     $lunch =~ s/<br>/ :: /g;
     # remove daily tags
-    $lunch =~ s/Dagens://g;
-    $lunch =~ s/Vegetarisk://g;
-    $lunch =~ s/Sallad://g;
     $lunch =~ s/<.*?>//g;
+    $lunch =~ s/Dagens[:\s]*//g;
+    $lunch =~ s/Vegetarisk[:\s]*//g;
+    $lunch =~ s/Sallad[:\s]*//g;
 
     # remove any extra choice separator and space at either end
     # remove double sep
@@ -321,7 +326,7 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /$day .*?<\/span>(.+?>)(?: <\/p>|<\/td>)/)
+  if ($htmlbody =~ /$day .*?<\/span>(.+?>)(?: <\/p>|<\/td>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<\/p>/ :: /g;
@@ -591,15 +596,18 @@ sub mediconvillage_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<div class="label-above">.*?$day<\/div>(.*?)<\/div><\/div>/i)
+  $day = $days_match_english{$day};
+  print STDERR "day: $day\n" if $opt_d;
+  if ($htmlbody =~ /<h3 class=".*?">.*?$day<\/h3>(.*?)<\/div>\s*<\/div>/i)
   {
     $lunch = $1;
-    $lunch =~ s/<br \/>/ :: /g;
+    $lunch =~ s/<\/p>/ :: /g;
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/\xc2//g; # remove garbage char
     #remove lunchtags, change to sep
     $lunch =~ s/Dagens Inspira:/ :: /g;
     $lunch =~ s/Vegetariskt:/ :: /g;
+    $lunch =~ s/Veg:/ :: /g;
     $lunch =~ s/Mediterranean:/ :: /g;
     $lunch =~ s/Dagens enkla:/ :: /g;
 
