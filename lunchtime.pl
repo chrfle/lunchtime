@@ -141,6 +141,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
   }
+  print STDERR "MMM $body MMM\n" if $opt_d;
 
   foreach $day (@days_match)
   {
@@ -445,7 +446,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ / s[vw]e.*?(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
+  if ($htmlbody =~ / [sS][vw]e.*?(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
