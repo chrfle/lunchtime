@@ -24,7 +24,8 @@ for i in j[wd]:
         ai = {'fallback': i['name'] + ': ' + '|'.join(i['menu']),
               'pretext': '<' + i['link'] + '|' + i['name'] + '>',
               'text': '\n'.join(i['menu']),
-              'color': '#DAA520'}
+              'color': '#DAA520',
+              "mrkdwn_in": ["text"]}
         a.append(ai)
 m = {'text': 'Today\'s lunch suggestions brought to you by <https://mudhead.se/lunch|mudhead lunchtime>',
      'attachments': a}
