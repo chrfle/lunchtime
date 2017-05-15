@@ -54,11 +54,11 @@ sub geturl
 
 
 @days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
-%days_match_english = ('ndag', 'Monday',
-                       'Tisdag', 'Tuesday',
-                       'Onsdag', 'Wednesday',
-                       'Torsdag', 'Thursday',
-                       'Fredag', 'Friday');
+#%days_match_english = ('ndag', 'Monday',
+#                       'Tisdag', 'Tuesday',
+#                       'Onsdag', 'Wednesday',
+#                       'Torsdag', 'Thursday',
+#                       'Fredag', 'Friday');
 
 #%days_match_short = ('ndag', 'Mån'
 #                    ,'Tisdag', 'Tis'
@@ -597,17 +597,17 @@ sub mediconvillage_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  $day = $days_match_english{$day};
   print STDERR "day: $day\n" if $opt_d;
   if ($htmlbody =~ /<h3 class=".*?">.*?$day<\/h3>(.*?)<\/div>\s*<\/div>/i)
   {
     $lunch = $1;
-    $lunch =~ s/<\/p>/ :: /g;
+    $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/\xc2//g; # remove garbage char
     #remove lunchtags, change to sep
     $lunch =~ s/Dagens Inspira:/ :: /g;
     $lunch =~ s/Vegetariskt:/ :: /g;
+    $lunch =~ s/Vegetarisk:/ :: /g;
     $lunch =~ s/Veg:/ :: /g;
     $lunch =~ s/Mediterranean:/ :: /g;
     $lunch =~ s/Dagens enkla:/ :: /g;
