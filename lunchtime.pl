@@ -15,7 +15,7 @@ getopts('df:w:');
 %urls = (
         'http://www.finninn.se/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
        ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
-       ,'http://www.restaurant.ideon.se/', [\&ideonalfa_day, \&weeknumtest, "Ideon&nbsp;Alfa"]
+       ,'http://www.ideon-restaurang.se', [\&ideonkryddhyllan_day, \&weeknumtest_none, "Kryddhyllan"]
        ,'https://eurest.mashie.eu/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
@@ -378,26 +378,21 @@ sub bryggan_day
   return "<ul><li>".$lunch."</li></ul>";
 }
 
-sub ideonalfa_day
+sub ideonkryddhyllan_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<span style.*$day.*?<\/span>(.+?Veg[ae]tarisk.+?)<\/p>/i)
+  if ($htmlbody =~ /<h2 class="ppb_menu_title" >.*?$day.*?<\/h2>(.+?)<div class="menu_multiple_wrapper">/i)
   {
     $lunch = $1;
+    # remove price
+    $lunch =~ s/<span class="menu_price">.*?<\/span>//g;
+    $lunch =~ s/<br class="clear"\/>/ :: /g;
     $lunch =~ s/\s+/ /g;
-    $lunch =~ s/<p>/ - /g;
     $lunch =~ s/<.*?>//g;
 
     $lunch =~ s/^\s+//;
     $lunch =~ s/\s+$//;
-    #replace  - as separator between lunch choices, but first remove the first sep
-    $lunch =~ s/^[- ]+//;
-    # and remove any stray separators (and space) at end
-    $lunch =~ s/[- ]+$//;
-    $lunch =~ s/ - / :: /g;
-    $lunch =~ s/Dagens.*?://g; # remove the names Dagens whatever
-    $lunch =~ s/Vegatarisk/Vegetarisk/g; # sometimes it's hard to 
 
     # remove any extra choice separator and space at either end
     # remove double sep
@@ -410,7 +405,7 @@ sub ideonalfa_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
+  $lunch = encode("utf8", decode("utf8", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
