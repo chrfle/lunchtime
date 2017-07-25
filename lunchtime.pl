@@ -26,7 +26,7 @@ getopts('df:w:');
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        ,'http://www.mediconvillage.se/sv/hogt-i-tak', [\&mediconvillage_day, \&weeknumtest_none, "Medicon&nbsp;Village"]
-       ,'http://www.matsalen.nu/luncher.php', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
+       ,'http://www.matsalen.nu', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
        ,'http://brickseatery.se/lunch', [\&bricks_day, \&weeknumtest, "Bricks&nbsp;Eatery"]
        );
 
@@ -441,7 +441,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ / [sS][vw]e.*?(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
+  if ($htmlbody =~ /(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
@@ -678,6 +678,7 @@ sub bricks_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("utf-8", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
