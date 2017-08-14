@@ -238,14 +238,18 @@ sub hilda_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  # always three alternatives
-  if ($htmlbody =~ /<span class="day">.*?$day.*?<\/span>.*?<section class="day-alternative">(.*?)<\/section>.*?<section class="day-alternative">(.*?)<\/section>.*?<section class="day-alternative">(.*?)<\/section>/i)
+  # get everything until 5 </div> with space between (which is too much)
+  if ($htmlbody =~ /<span class="day">.*?$day.*?<\/span>.*?<section class="day-alternative">(.*?)<\/div>(?:\s*<\/div>){4}/i)
   {
-    $lunch = $1.$2.$3;
+    $lunch = $1;
+    #print STDERR "LUNCH1: $lunch\n" if $opt_d;
+    $lunch =~ s/<\/section>.*?<\/button>//g; # remove text between items
+    $lunch =~ s/ \/ .*? <\/span>//g; # remove eng alt text (from ' / ' to end of item)
     $lunch =~ s/>Gr&#246;nt och Gott/> :: /g;
     $lunch =~ s/>Gr&#228;nsl&#246;st Gott/> :: /;
     $lunch =~ s/>Dagens Klassiker/> :: /;
     $lunch =~ s/>Dagens Husman/> :: /;
+    $lunch =~ s/>A La Minute/> :: /;
     $lunch =~ s/<.*?>//g;
 
     # remove any extra choice separator and space at either end
