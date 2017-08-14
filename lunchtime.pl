@@ -441,7 +441,7 @@ sub scotlandyard_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /(?:<strong>|<p>|<br \/>).*?$day.*(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
+  if ($htmlbody =~ /(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
