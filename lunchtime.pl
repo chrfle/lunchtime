@@ -691,7 +691,7 @@ sub paolos_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<strong>.*?$day.*?<\/strong>(.*?)<strong>/i)
+  if ($htmlbody =~ /<strong>.{0,4}$day.*?<\/strong>(.*?)<strong>/i)
   {
     $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
