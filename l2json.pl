@@ -55,6 +55,7 @@ while (<>)
     my @lunch_list = split(/<\/li><li>/, $lunch);
     foreach (@lunch_list) # using default $_ works since this is last in while loop
     {
+      s/\t/ /g; # change tabs to spaces
       s/[\s]{2,}/ /g; # remove multi spaces
       s/&amp;/&/g;
       s/&#180;/´/g;
