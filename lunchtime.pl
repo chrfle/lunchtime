@@ -611,6 +611,7 @@ sub mediconvillage_day
     $lunch =~ s/Veg:/ :: /g;
     $lunch =~ s/Mediterranean:/ :: /g;
     $lunch =~ s/Dagens enkla:/ :: /g;
+    $lunch =~ s/^.*?\d+\/\d+\s* :: //; # remove first item which is the day (again)
 
     # remove any extra choice separator and space at either end
     # remove double sep
