@@ -26,7 +26,7 @@ getopts('df:w:');
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
        ,'http://www.mediconvillage.se/sv/hogt-i-tak', [\&mediconvillage_day, \&weeknumtest_none, "Medicon&nbsp;Village"]
-       ,'http://www.matsalen.nu', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
+      #,'http://www.matsalen.nu', [\&matsalen_day, \&weeknumtest_none, "Matsalen"]
        ,'http://brickseatery.se/lunch', [\&bricks_day, \&weeknumtest, "Bricks&nbsp;Eatery"]
        ,'https://www.elite.se/sv/hotell/lund/hotel-ideon/paolos/', [\&paolos_day, \&weeknumtest, "Paolos"]
        );
