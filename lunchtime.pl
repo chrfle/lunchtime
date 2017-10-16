@@ -20,7 +20,7 @@ getopts('df:w:');
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
-       ,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
+      #,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
        ,'http://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
