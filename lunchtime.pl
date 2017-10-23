@@ -346,8 +346,8 @@ sub hojdpunkten_day
     $lunch =~ s/^[:\s]+//;
     $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
 
-    $lunch =~ s/ :: \d+\. / :: /g; # remove lunch alternative number
-    $lunch =~ s/^\d+\. //;         # remove lunch alternative number first
+    $lunch =~ s/ :: \d+\.\s*/ :: /g; # remove lunch alternative number
+    $lunch =~ s/^\d+\.\s*//;         # remove lunch alternative number first
   }
   else
   {
