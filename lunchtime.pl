@@ -120,7 +120,7 @@ foreach $url (sort urlsort keys %urls)
     ($req, $body) = geturl($url_req);
     if ($req eq '200')
     {
-      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny.*?v\.\s+$weeknum/m)
+      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny.*?v\.\s*$weeknum/m)
       {
         $url_req .= 'MALunchmeny' . $1 . '/';
         print STDERR "adjusted url: $url_req\n" if $opt_d;
