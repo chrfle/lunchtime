@@ -604,6 +604,7 @@ sub mediconvillage_day
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
     $lunch =~ s/\xc2//g; # remove garbage char
+    $lunch =~ s/\xb4//g; # remove garbage char '
     #remove lunchtags, change to sep
     $lunch =~ s/Dagens Inspira:/ :: /g;
     $lunch =~ s/Vegetariskt:/ :: /g;
