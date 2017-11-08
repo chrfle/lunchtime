@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-dep_path=/home/pacs/bin
-www_path=/var/www
-echo "Reploying from path ${dep_path} and ${www_path}"
-echo `cp -u -v ${dep_path}/lunchtime.pl ./lunchtime.pl`
-echo `cp -u -v ${www_path}/static/lt.css ./static/lt.css`
-echo "Reployment done"

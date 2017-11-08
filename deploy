@@ -1,8 +1,6 @@
 #!/usr/bin/env sh
 
-dep_path=/home/pacs/bin
 www_path=/var/www
-echo "Deploying to path ${dep_path} and ${www_path}"
-echo `cp -u -v ./lunchtime.pl ${dep_path}/lunchtime.pl`
+echo "Deploying to path ${www_path}"
 echo `cp -u -v ./static/lt.css ${www_path}/static/lt.css`
 echo "Deployment done"
