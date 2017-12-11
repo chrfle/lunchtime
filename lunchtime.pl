@@ -16,7 +16,7 @@ getopts('df:w:');
         'http://www.finninn.se/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
        ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
        ,'http://www.ideon-restaurang.se', [\&ideonkryddhyllan_day, \&weeknumtest_none, "Kryddhyllan"]
-       ,'https://eurest.mashie.eu/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
+       ,'https://eurest.mashie.com/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
