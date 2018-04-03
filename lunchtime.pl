@@ -44,7 +44,7 @@ sub geturl
   my $req;
   my $body = '';
   $http = new WWW::Curl::Easy;
-  $http->setopt(CURLOPT_HEADER, 1);
+  #$http->setopt(CURLOPT_HEADER, 1);
   $http->setopt(CURLOPT_FOLLOWLOCATION, 1);
   $http->setopt(CURLOPT_URL, $url_req);
   $http->setopt(CURLOPT_WRITEDATA, \$body);
@@ -473,9 +473,8 @@ sub annaskok_day
 sub scotlandyard_day
 {
   my ($jsonbody, $day) = @_;
-  my $lunch = '';
-  $jsonbody =~ s/.*?{/{/;
   my $json = decode_json($jsonbody);
+  my $lunch = '';
   $lunch = $json->{'LunchMenus'}[$days_index{$day}]{'Html'};
   $lunch =~ s/<p>.*?<\/p>//; # skip first <p> - english
   if ($lunch)
