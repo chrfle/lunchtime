@@ -5,6 +5,7 @@ use warnings;
 use WWW::Curl::Easy;
 use Encode;
 use POSIX;
+use JSON;
 use Getopt::Std;
 
 
@@ -19,7 +20,7 @@ getopts('df:w:');
        ,'https://eurest.mashie.com/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
-       ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
+       ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_json, "Scotland&nbsp;Yard"]
       #,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
        ,'https://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
@@ -56,29 +57,35 @@ sub geturl
 
 
 @days_match = ('ndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag');
-#%days_match_english = ('ndag', 'Monday',
-#                       'Tisdag', 'Tuesday',
-#                       'Onsdag', 'Wednesday',
-#                       'Torsdag', 'Thursday',
-#                       'Fredag', 'Friday');
+#%days_match_english = ('ndag' => 'Monday',
+#                       'Tisdag' => 'Tuesday',
+#                       'Onsdag' => 'Wednesday',
+#                       'Torsdag' => 'Thursday',
+#                       'Fredag' => 'Friday');
 
-#%days_match_short = ('ndag', 'Mån'
-#                    ,'Tisdag', 'Tis'
-#                    ,'Onsdag', 'Ons'
-#                    ,'Torsdag', 'Tors'
-#                    ,'Fredag', 'Fre');
+#%days_match_short = ('ndag' => 'Mån'
+#                    ,'Tisdag' => 'Tis'
+#                    ,'Onsdag' => 'Ons'
+#                    ,'Torsdag' => 'Tors'
+#                    ,'Fredag' => 'Fre');
 
-%days_print = ('ndag', 'Måndag'
-              ,'Tisdag', 'Tisdag'
-              ,'Onsdag', 'Onsdag'
-              ,'Torsdag', 'Torsdag'
-              ,'Fredag', 'Fredag');
+%days_print = ('ndag' => 'Måndag'
+              ,'Tisdag' => 'Tisdag'
+              ,'Onsdag' => 'Onsdag'
+              ,'Torsdag' => 'Torsdag'
+              ,'Fredag' => 'Fredag');
 
-%days_ref = ('ndag', 'mandag'
-            ,'Tisdag', 'tisdag'
-            ,'Onsdag', 'onsdag'
-            ,'Torsdag', 'torsdag'
-            ,'Fredag', 'fredag');
+%days_ref = ('ndag' => 'mandag'
+            ,'Tisdag' => 'tisdag'
+            ,'Onsdag' => 'onsdag'
+            ,'Torsdag' => 'torsdag'
+            ,'Fredag' => 'fredag');
+
+%days_index = ('ndag' => 0
+              ,'Tisdag' => 1
+              ,'Onsdag' => 2
+              ,'Torsdag' => 3
+              ,'Fredag' => 4);
 
 $ntime = time;
 if ($opt_w)
@@ -140,6 +147,13 @@ foreach $url (sort urlsort keys %urls)
         print STDERR "adjusted url: $url_req\n" if $opt_d;
       }
     }
+  }
+  elsif ($url =~ /scotland/)
+  {
+    my $json_date = POSIX::strftime("%Y-%m-%d", localtime($ntime));
+    $json_date =~ s/-0/-/g;
+    $url_req = "http://www.fazerfoodco.se/api/restaurant/menu/week?language=sv&restaurantPageId=188211&weekDate=" . $json_date;
+    print STDERR "adjusted url: $url_req\n" if $opt_d;
   }
 
   ($req, $body) = geturl($url_req);
@@ -458,26 +472,23 @@ sub annaskok_day
 
 sub scotlandyard_day
 {
-  my ($htmlbody, $day) = @_;
+  my ($jsonbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /\d\s+[Ss][vw]e.*?(?:<strong>|<p>|<br \/>).*?$day(?:<\/strong>|<br \/>)(.+?)(?:<strong>|<\/p>|<p>)/)
+  $jsonbody =~ s/.*?{/{/;
+  my $json = decode_json($jsonbody);
+  $lunch = $json->{'LunchMenus'}[$days_index{$day}]{'Html'};
+  $lunch =~ s/<p>.*?<\/p>//; # skip first <p> - english
+  if ($lunch)
   {
-    $lunch = $1;
     $lunch =~ s/<br \/>/ :: /g;
     $lunch =~ s/<.*?>//g;
-
-    $lunch =~ s/\\&quot;/&quot;/g;
-    # remove any extra choice separator and space at either end
-    # remove double sep
-    $lunch =~ s/[:\s]+$//;
-    $lunch =~ s/^[:\s]+//;
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
   }
   else
   {
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("iso-8859-1", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
@@ -763,6 +774,12 @@ sub weeknumtest
           $body =~ /<strong menu-week>\s*$weeknum/i ||
           $body =~ /v.?\s{0,3}$weeknum/i ||
           $body =~ /v.?$weeknum_pad/i);
+}
+
+sub weeknumtest_json
+{
+  my ($body) = @_;
+  return ($body =~ /"WeekNumber": $weeknum/)
 }
 
 sub weeknumtest_none
