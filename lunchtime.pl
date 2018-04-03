@@ -15,7 +15,7 @@ getopts('df:w:');
 
 %urls = (
         'http://www.finninn.se/lunch-meny/', [\&finninn_day, \&weeknumtest, "Finn&nbsp;Inn"]
-       ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest, "Höjdpunkten"]
+       ,'http://www.restauranghojdpunkten.se/index.php?page=Meny', [\&hojdpunkten_day, \&weeknumtest_none, "Höjdpunkten"]
        ,'http://www.ideon-restaurang.se', [\&ideonkryddhyllan_day, \&weeknumtest_none, "Kryddhyllan"]
        ,'https://eurest.mashie.com/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
@@ -360,7 +360,7 @@ sub hojdpunkten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /$day .*?<\/span>(.+?>)(?: <\/p>|<\/td>)/i)
+  if ($htmlbody =~ /$day .*?<\/p>(.+?>)(?: <\/p>|<\/td>)/i)
   {
     $lunch = $1;
     $lunch =~ s/<\/p>/ :: /g;
