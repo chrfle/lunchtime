@@ -21,7 +21,7 @@ getopts('df:w:');
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
        ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_none, "Scotland&nbsp;Yard"]
       #,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
-       ,'http://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
+       ,'https://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
        ,'http://www.bryggancafe.se/veckans-lunch/', [\&bryggan_day, \&weeknumtest, "Cafe&nbsp;Bryggan"]
        ,'http://restaurangedison.se/lunch', [\&ideonedison_day, \&weeknumtest, "Ideon&nbsp;Edison"]
@@ -121,9 +121,10 @@ foreach $url (sort urlsort keys %urls)
     ($req, $body) = geturl($url_req);
     if ($req eq '200')
     {
-      if ($body =~ /MALunchmeny(\d+)\/.*Lunchmeny.*?v\.\s*$weeknum/m)
+      # <a href="/sv/delta/Start/Lunchmeny/LunchDelta5/">Lunchmeny 2018 v. 14</a>
+      if ($body =~ /LunchDelta(\d+)\/.*Lunchmeny.*?v\.\s*$weeknum/m)
       {
-        $url_req .= 'MALunchmeny' . $1 . '/';
+        $url_req .= 'LunchDelta' . $1 . '/';
         print STDERR "adjusted url: $url_req\n" if $opt_d;
       }
     }
@@ -525,7 +526,8 @@ sub ideondelta_day
     $lunch =~ s/&/&amp;/g; # and back again to catch any unescaped simple &
 
     # remove LF,GF and space
-    $lunch =~ s/LF,GF\s+//g;
+    $lunch =~ s/LF.GF\s+//g;
+    $lunch =~ s/GF.LF\s+//g;
     $lunch =~ s/GF\s+//g;
     $lunch =~ s/LF\s+//g;
 
