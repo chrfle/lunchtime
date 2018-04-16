@@ -477,7 +477,7 @@ sub scotlandyard_day
   my $json = decode_json($jsonbody);
   my $lunch = '';
   $lunch = $json->{'LunchMenus'}[$days_index{$day}]{'Html'};
-  $lunch =~ s/<p>.*?<\/p>//;  # skip first <p> - english
+  $lunch =~ s/<p>.*?<\/p>$//;  # skip last <p> - english
   if ($lunch)
   {
     $lunch =~ s/\n//g;  # remove newline
