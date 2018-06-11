@@ -474,6 +474,7 @@ sub annaskok_day
 sub scotlandyard_day
 {
   my ($jsonbody, $day) = @_;
+  $jsonbody =~ s/\xb4/'/g;
   my $json = decode_json($jsonbody);
   my $lunch = '';
   $lunch = $json->{'LunchMenus'}[$days_index{$day}]{'Html'};
