@@ -20,7 +20,7 @@ getopts('df:w:');
        ,'https://eurest.mashie.com/public/menu/restaurang+hilda/8b31f89a', [\&hilda_day, \&weeknumtest, "Nya&nbsp;Hilda"]
        ,'http://magnuskitchen.se/veckans-lunch.aspx', [\&magnus_day, \&weeknumtest, "Magnus&nbsp;Kitchen"]
        ,'http://www.annaskok.se/', [\&annaskok_day, \&weeknumtest, "Annas&nbsp;Kök"]
-       ,'http://www.fazer.se/restauranger--cafeer/menyer/fazer-restaurang-scotland-yard/', [\&scotlandyard_day, \&weeknumtest_json, "Scotland&nbsp;Yard"]
+       ,'https://www.fazerfoodco.se/restauranger/restauranger/scotland-yard/', [\&scotlandyard_day, \&weeknumtest_json, "Scotland&nbsp;Yard"]
       #,'http://www.italia-ilristorante.com/dagens-lunch', [\&italia_day, \&weeknumtest_none, "Italia"]
        ,'https://serviceportal.sodexo.se/sv/delta/Start/Lunchmeny/', [\&ideondelta_day, \&weeknumtest_none, "Ideon&nbsp;Delta"]
       #,'http://www.thaiway.se', [\&thaiway_day, \&weeknumtest, "Thai&nbsp;Way"]
@@ -478,8 +478,11 @@ sub scotlandyard_day
   my $json = decode_json($jsonbody);
   my $lunch = '';
   $lunch = $json->{'LunchMenus'}[$days_index{$day}]{'Html'};
-  $lunch =~ s/\n//g;  # remove newlines
-  $lunch =~ s/<\/table><table style.*$//;  # skip last <table> - english
+  if ($lunch)
+  {
+    $lunch =~ s/\n//g;  # remove newlines
+    $lunch =~ s/<\/table><table style.*$//;  # skip last <table> - english
+  }
   if ($lunch)
   {
     $lunch =~ s/<br \/>/ :: /g;
