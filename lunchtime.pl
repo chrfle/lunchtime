@@ -481,7 +481,7 @@ sub scotlandyard_day
   if ($lunch)
   {
     $lunch =~ s/\n//g;  # remove newlines
-    $lunch =~ s/<\/table><table style.*$//;  # skip last <table> - english
+    $lunch =~ s/<\/p><p>.*$//;  # skip last <p> - english
   }
   if ($lunch)
   {
