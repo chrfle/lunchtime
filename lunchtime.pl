@@ -170,6 +170,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&\#65279;/ /g; # BOM char should be ignored, like soft space
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
+    $body =~ s/\xbd/&frac12;/g;
   }
   print STDERR "MMM $body MMM\n" if $opt_d;
 
