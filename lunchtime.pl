@@ -130,11 +130,19 @@ foreach $url (sort urlsort keys %urls)
     if ($req eq '200')
     {
       # <a href="/sv/delta/Start/Lunchmeny/LunchDelta5/">Lunchmeny 2018 v. 14</a>
-      if ($body =~ /LunchDelta(\d+)\/.*Lunchmeny.*?v\.\s*$weeknum/m)
+      if ($body =~ /LunchDelta(\d+)\/.*Lunchmeny.*?v[\.\s]*$weeknum/m)
       {
         $url_req .= 'LunchDelta' . $1 . '/';
         print STDERR "adjusted url: $url_req\n" if $opt_d;
       }
+      else
+      {
+        print STDERR "no adjustment found\n" if $opt_d;
+      }
+    }
+    else
+    {
+      print STDERR "problem with adjusting url, err $req\n" if $opt_d;
     }
   }
   elsif ($url =~ /linnersmat/)
@@ -147,6 +155,14 @@ foreach $url (sort urlsort keys %urls)
         $url_req = $1;
         print STDERR "adjusted url: $url_req\n" if $opt_d;
       }
+      else
+      {
+        print STDERR "no adjustment found\n" if $opt_d;
+      }
+    }
+    else
+    {
+      print STDERR "problem with adjusting url, err $req\n" if $opt_d;
     }
   }
   elsif ($url =~ /scotland/)
