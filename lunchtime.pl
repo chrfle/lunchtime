@@ -225,7 +225,7 @@ print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR
 <meta name="viewport" content="initial-scale=1.0,width=device-width" />
 <link href="/food/favicon.png" rel="icon" type="image/x-icon" />
 <script type="text/javascript">
-<!--  
+<!--
   function ld() {
     if (window.location.hash != '') {
       return;
@@ -238,7 +238,7 @@ print qq{<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR
     }
   }
   window.onload = ld;
-// -->  
+// -->
 </script>
 </head>
 <body>
@@ -290,20 +290,12 @@ sub hilda_day
   {
     $lunch = $1;
     #print STDERR "LUNCH1: $lunch\n" if $opt_d;
-    $lunch =~ s/<\/section>.*?<\/button>//g; # remove text between items
-    $lunch =~ s/ \/ .*? <\/span>//g; # remove eng alt text (from ' / ' to end of item)
-    $lunch =~ s/>Gr&#246;nt och Gott/> :: /g;
-    $lunch =~ s/>Gr&#228;nsl&#246;st Gott/> :: /;
-    $lunch =~ s/>Dagens Klassiker/> :: /;
-    $lunch =~ s/>Dagens Husman/> :: /;
-    $lunch =~ s/>A La Minute/> :: /;
-    $lunch =~ s/<.*?>//g;
 
-    # remove any extra choice separator and space at either end
-    # remove double sep
-    $lunch =~ s/[:\s]+$//;
-    $lunch =~ s/^[:\s]+//;
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+    my $options = '';
+    while ($lunch =~ /<strong.?>.+?<span>(.+?)<\/span>/gms) {
+      $options .= "$1 :: ";
+    }
+    $lunch = substr $options, 0, -4;
   }
   else
   {
