@@ -187,6 +187,7 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
     $body =~ s/\xbd/&frac12;/g;
+    $body =~ s/\xe1\xbf\s*/&#8160;/g;
   }
   print STDERR "MMM $body MMM\n" if $opt_d;
 
