@@ -187,7 +187,6 @@ foreach $url (sort urlsort keys %urls)
     $body =~ s/&lt;/</g;
     $body =~ s/&gt;/>/g;
     $body =~ s/\xbd/&frac12;/g;
-    $body =~ s/\xe1\xbf\s*/&#8160;/g;
   }
   print STDERR "MMM $body MMM\n" if $opt_d;
 
@@ -673,6 +672,7 @@ sub mediconvillage_day
     $lunch = "&mdash;";
   }
   $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
+  $lunch = encode("utf8", decode("utf-8", $lunch));
   return "<ul><li>".$lunch."</li></ul>";
 }
 
