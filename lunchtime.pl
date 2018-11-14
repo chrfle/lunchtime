@@ -648,24 +648,14 @@ sub mediconvillage_day
   if ($htmlbody =~ /<h3 class=".*?">.*?$day<\/h3>(.*?)<\/div>\s*<\/div>/i)
   {
     $lunch = $1;
-    $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/<.*?>//g;
-    $lunch =~ s/\xc2//g; # remove garbage char
-    $lunch =~ s/\xb4//g; # remove garbage char '
-    #remove lunchtags, change to sep
-    $lunch =~ s/Dagens Inspira:/ :: /g;
-    $lunch =~ s/Vegetariskt:/ :: /g;
-    $lunch =~ s/Vegetarisk:/ :: /g;
-    $lunch =~ s/Veg:/ :: /g;
-    $lunch =~ s/Mediterranean:/ :: /g;
-    $lunch =~ s/Dagens enkla:/ :: /g;
-    $lunch =~ s/^.*?\d+\/\d+\s* :: //; # remove first item which is the day (again)
 
-    # remove any extra choice separator and space at either end
-    # remove double sep
-    $lunch =~ s/[:\s]+$//;
-    $lunch =~ s/^[:\s]+//;
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+    my $options = '';
+    while ($lunch =~ /<\/strong>(?!<)(.+?)<\/p>/gms) {
+      if ($1 ne '') {
+        $options .= "$1 :: ";
+      }
+    }
+    $lunch = substr $options, 0, -4
   }
   else
   {
