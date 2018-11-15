@@ -643,26 +643,25 @@ sub ideonedison_day
 sub mediconvillage_day
 {
   my ($htmlbody, $day) = @_;
-  my $lunch = '';
   print STDERR "day: $day\n" if $opt_d;
+  my @options = ();
   if ($htmlbody =~ /<h3 class=".*?">.*?$day<\/h3>(.*?)<\/div>\s*<\/div>/i)
   {
-    $lunch = $1;
+    my $lunch = $1;
 
-    my $options = '';
     while ($lunch =~ /<\/strong>(?!<)(.+?)<\/p>/gms) {
       if ($1 ne '') {
-        $options .= "$1 :: ";
+        my $l = $1;
+        $l =~ s/^[:\s]+//;  # sometimes the : is put after strong tag and needs to be removed
+        push(@options, $l);
       }
     }
-    $lunch = substr $options, 0, -4
   }
   else
   {
-    $lunch = "&mdash;";
+    push(@options, "&mdash;");
   }
-  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  return "<ul><li>".$lunch."</li></ul>";
+  return "<ul><li>".join("<\/li><li>", @options)."</li></ul>";
 }
 
 sub matsalen_day
