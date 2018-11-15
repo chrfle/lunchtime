@@ -643,37 +643,27 @@ sub ideonedison_day
 sub mediconvillage_day
 {
   my ($htmlbody, $day) = @_;
-  my $lunch = '';
   print STDERR "day: $day\n" if $opt_d;
+  my @options = ();
   if ($htmlbody =~ /<h3 class=".*?">.*?$day<\/h3>(.*?)<\/div>\s*<\/div>/i)
   {
-    $lunch = $1;
-    $lunch =~ s/<br \/>/ :: /g;
-    $lunch =~ s/<.*?>//g;
-    $lunch =~ s/\xc2//g; # remove garbage char
-    $lunch =~ s/\xb4//g; # remove garbage char '
-    #remove lunchtags, change to sep
-    $lunch =~ s/Dagens Inspira:/ :: /g;
-    $lunch =~ s/Vegetariskt:/ :: /g;
-    $lunch =~ s/Vegetarisk:/ :: /g;
-    $lunch =~ s/Veg:/ :: /g;
-    $lunch =~ s/Mediterranean:/ :: /g;
-    $lunch =~ s/Dagens enkla:/ :: /g;
-    $lunch =~ s/^.*?\d+\/\d+\s* :: //; # remove first item which is the day (again)
+    my $lunch = $1;
 
-    # remove any extra choice separator and space at either end
-    # remove double sep
-    $lunch =~ s/[:\s]+$//;
-    $lunch =~ s/^[:\s]+//;
-    $lunch =~ s/\s::(?:\s+::)+\s/ :: /g;
+    while ($lunch =~ /<\/strong>(?!<)(.+?)<\/p>/gms) {
+      if ($1 ne '') {
+        my $l = $1;
+        $l =~ s/^[:\s]+//;  # sometimes the : is put after strong tag and needs to be removed
+        push(@options, $l);
+      }
+    }
   }
   else
   {
-    $lunch = "&mdash;";
+    push(@options, "&mdash;");
   }
-  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  $lunch = encode("utf8", decode("utf-8", $lunch));
-  return "<ul><li>".$lunch."</li></ul>";
+  my $optlist = "<ul><li>".join("<\/li><li>", @options)."</li></ul>";
+  $optlist = encode("utf8", decode("utf-8", $optlist));
+  return $optlist;
 }
 
 sub matsalen_day
