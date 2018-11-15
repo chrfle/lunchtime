@@ -284,25 +284,23 @@ print qq{<div class="footer">
 sub hilda_day
 {
   my ($htmlbody, $day) = @_;
-  my $lunch = '';
+  my @options =();
   # get everything until 5 </div> with space between (which is too much)
   if ($htmlbody =~ /<span class="day">.*?$day.*?<\/span>.*?<section class="day-alternative">(.*?)<\/div>(?:\s*<\/div>){4}/i)
   {
     $lunch = $1;
     #print STDERR "LUNCH1: $lunch\n" if $opt_d;
 
-    my $options = '';
     while ($lunch =~ /<strong.?>.+?<span>(.+?)<\/span>/gms) {
-      $options .= "$1 :: ";
+      push(@options, $1);
     }
-    $lunch = substr $options, 0, -4;
   }
   else
   {
-    $lunch = "&mdash;";
+    push(@options, "&mdash;");
   }
-  $lunch =~ s/\s+::\s+/<\/li><li>/g; # change separator to html list
-  return "<ul><li>".$lunch."</li></ul>";
+  my $optlist = "<ul><li>".join("<\/li><li>", @options)."</li></ul>";
+  return $optlist;
 }
 
 sub magnus_day
