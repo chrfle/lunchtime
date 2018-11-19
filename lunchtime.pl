@@ -651,6 +651,7 @@ sub mediconvillage_day
       if ($1 ne '') {
         my $l = $1;
         $l =~ s/^[:\s]+//;  # sometimes the : is put after strong tag and needs to be removed
+        $l =~ s/<.*?>//g;  # remove any tags remaining
         push(@options, $l);
       }
     }
