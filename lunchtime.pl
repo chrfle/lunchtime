@@ -779,7 +779,8 @@ sub aptiten_day
 {
   my ($htmlbody, $day) = @_;
   my $lunch = '';
-  if ($htmlbody =~ /<h2>.*?$day\:?(.*?)<\/h2>/i)
+
+  if ($htmlbody =~ /<h4 class="priceListElement-itemTitle" itemprop="headline" >.*?$day\:?(.*?)<\/h4>/i)
   {
     $lunch = $1;
     $lunch =~ s/<.*?>//g;
